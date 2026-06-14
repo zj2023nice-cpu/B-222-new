@@ -4,14 +4,14 @@
     <text class="timeline-subtitle">记录你的每一步成长</text>
   </view>
 
-  <block wx:if="{{ loading }}">
+  <block wx:if="{{ loading && !initialized }}">
     <view class="timeline-loading">
       <t-loading theme="circular" size="40rpx" />
       <text class="loading-text">加载中...</text>
     </view>
   </block>
 
-  <block wx:elif="{{ groupedItems.length === 0 }}">
+  <block wx:elif="{{ initialized && groupedItems.length === 0 }}">
     <t-empty
       t-class="timeline-empty"
       description="暂无记录，去记录你的第一步吧"
@@ -33,7 +33,7 @@
         </view>
 
         <view
-          class="timeline-item {{ index === group.items.length - 1 ? 'timeline-item-last' : '' }}"
+          class="timeline-item {{ itemIndex === group.items.length - 1 ? 'timeline-item-last' : '' }}"
           wx:for="{{ group.items }}"
           wx:for-item="item"
           wx:for-index="itemIndex"

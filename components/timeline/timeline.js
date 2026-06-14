@@ -152,6 +152,7 @@ Component({
     timelineItems: [],
     groupedItems: [],
     loading: false,
+    initialized: false,
     typeMap: TYPE_MAP,
   },
 
@@ -197,12 +198,14 @@ Component({
         this.setData({
           timelineItems: sorted,
           groupedItems: grouped,
+          initialized: true,
         });
       } catch (err) {
         console.error("[Timeline] 加载时间线失败:", err);
         this.setData({
           timelineItems: [],
           groupedItems: [],
+          initialized: true,
         });
       } finally {
         this.setData({ loading: false });
@@ -230,11 +233,25 @@ Component({
 
       this.triggerEvent("itemtap", { item });
 
-      if (item.type === "assessment" && item.raw?._id) {
-        wx.navigateTo({
-          url: `/pages/student/exam-records/exam-records`,
-          fail: () => {},
-        });
+      if (item.type === "assessment") {
+        const assessmentId = item.raw?.assessmentId;
+        const title = item.raw?.assessmentTitle || "心理测评";
+        if (assessmentId) {
+          wx.navigateTo({
+            url: `/pages/student/assessment/assessment-detail/assessment-detail?id=${assessmentId}&title=${encodeURIComponent(title)}`,
+            fail: () => {
+              wx.navigateTo({
+                url: `/pages/student/exam-records/exam-records`,
+                fail: () => {},
+              });
+            },
+          });
+        } else {
+          wx.navigateTo({
+            url: `/pages/student/exam-records/exam-records`,
+            fail: () => {},
+          });
+        }
       } else if (item.type === "appointment") {
         wx.navigateTo({
           url: `/pages/student/appointment-list/appointment-list`,
