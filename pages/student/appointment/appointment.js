@@ -39,6 +39,96 @@ Page({
     detailConsultant: null,
   },
 
+  findFirstAvailableSlot(slots) {
+    return (slots || []).findIndex((slot) => !slot.isFull);
+  },
+
+  getSlotsByDateStr(consultant, dateStr) {
+    const scheduleItem = (consultant.schedule || []).find(
+      (s) => s.dateStr === dateStr,
+    );
+    return scheduleItem ? scheduleItem.slots || [] : [];
+  },
+
+  repairSelectionState({ prevDateStr, prevTime, availableDates, consultant }) {
+    const messages = [];
+    let dateIndex = 0;
+    let timeIndex = -1;
+
+    const firstAvailDateIndex = availableDates.findIndex(
+      (d) => !d.isFull || d.waitlistStatus,
+    );
+    if (firstAvailDateIndex === -1) {
+      return { dateIndex: 0, timeIndex: -1, messages };
+    }
+
+    const prevDateIdx = availableDates.findIndex((d) => d.dateStr === prevDateStr);
+    const dateIsValid =
+      prevDateIdx !== -1 &&
+      (!availableDates[prevDateIdx].isFull || availableDates[prevDateIdx].waitlistStatus);
+
+    if (dateIsValid) {
+      dateIndex = prevDateIdx;
+      const slots = this.getSlotsByDateStr(consultant, prevDateStr);
+      const firstSlotIdx = this.findFirstAvailableSlot(slots);
+
+      if (prevTime) {
+        const prevTimeIdx = slots.findIndex(
+          (s) => s.time === prevTime && !s.isFull,
+        );
+        if (prevTimeIdx !== -1) {
+          timeIndex = prevTimeIdx;
+        } else if (firstSlotIdx !== -1) {
+          timeIndex = firstSlotIdx;
+          messages.push(`所选时段已不可用，已自动切换到 ${slots[timeIndex].time}`);
+        }
+      } else {
+        timeIndex = firstSlotIdx;
+      }
+    } else {
+      dateIndex = firstAvailDateIndex;
+      const newDate = availableDates[dateIndex];
+      messages.push(
+        `所选日期已不可用，已自动切换到 ${newDate.week} ${newDate.month}${newDate.day}`,
+      );
+
+      const slots = this.getSlotsByDateStr(consultant, newDate.dateStr);
+      const firstSlotIdx = this.findFirstAvailableSlot(slots);
+
+      if (prevTime) {
+        const prevTimeInNewDate = slots.findIndex(
+          (s) => s.time === prevTime && !s.isFull,
+        );
+        if (prevTimeInNewDate !== -1) {
+          timeIndex = prevTimeInNewDate;
+        } else if (firstSlotIdx !== -1) {
+          timeIndex = firstSlotIdx;
+          messages.push(`所选时段已不可用，已自动切换到 ${slots[timeIndex].time}`);
+        }
+      } else {
+        timeIndex = firstSlotIdx;
+      }
+    }
+
+    return { dateIndex, timeIndex, messages };
+  },
+
+  showMessages(messages) {
+    if (!messages || messages.length === 0) return;
+    messages.forEach((msg, i) => {
+      setTimeout(() => {
+        Toast({
+          context: this,
+          selector: "#t-toast",
+          message: msg,
+          theme: "warning",
+          direction: "column",
+          placement: "middle",
+        });
+      }, i * 800);
+    });
+  },
+
   // 获取从当天开始的未来 N 天日期
   getNextNDays(n) {
     const dates = [];
@@ -234,7 +324,18 @@ Page({
       return;
     }
 
-    const availableDates = this.data.availableDates.map((date, dIndex) => {
+    const prevDateStr =
+      this.data.selectedDateIndex >= 0 &&
+      this.data.availableDates[this.data.selectedDateIndex]
+        ? this.data.availableDates[this.data.selectedDateIndex].dateStr
+        : null;
+    const prevTime =
+      this.data.selectedTimeIndex >= 0 &&
+      this.data.timeSlots[this.data.selectedTimeIndex]
+        ? this.data.timeSlots[this.data.selectedTimeIndex].time
+        : null;
+
+    const availableDates = this.data.availableDates.map((date) => {
       const dailySchedule = consultant.schedule.find(
         (s) => s.dateStr === date.dateStr,
       );
@@ -247,20 +348,32 @@ Page({
       return { ...date, isFull, waitlistStatus, waitlistId, queueNumber };
     });
 
-    let defaultDateIndex = availableDates.findIndex((d) => !d.isFull);
-    if (defaultDateIndex === -1) defaultDateIndex = 0;
-
-    this.setData({
-      selectedConsultant: consultant,
-      selectedConsultantIndex: index,
-      showSchedulePopup: true,
-      availableDates: availableDates,
-      selectedDateIndex: defaultDateIndex,
-      selectedTimeIndex: -1,
-      timeSlots: consultant.schedule[defaultDateIndex]
-        ? consultant.schedule[defaultDateIndex].slots
-        : [],
+    const { dateIndex, timeIndex, messages } = this.repairSelectionState({
+      prevDateStr,
+      prevTime,
+      availableDates,
+      consultant,
     });
+
+    const timeSlots = this.getSlotsByDateStr(
+      consultant,
+      availableDates[dateIndex].dateStr,
+    );
+
+    this.setData(
+      {
+        selectedConsultant: consultant,
+        selectedConsultantIndex: index,
+        showSchedulePopup: true,
+        availableDates: availableDates,
+        selectedDateIndex: dateIndex,
+        selectedTimeIndex: timeIndex,
+        timeSlots: timeSlots,
+      },
+      () => {
+        this.showMessages(messages);
+      },
+    );
   },
 
   onClosePopup() {
@@ -273,13 +386,54 @@ Page({
     const selectedDate = this.data.availableDates[index];
     if (selectedDate.isFull && !selectedDate.waitlistStatus) return;
 
-    const scheduleItem = this.data.selectedConsultant.schedule[index];
-    const slots = scheduleItem ? scheduleItem.slots || [] : [];
-    this.setData({
-      selectedDateIndex: index,
-      selectedTimeIndex: -1,
-      timeSlots: slots,
-    });
+    const prevTime =
+      this.data.selectedTimeIndex >= 0 &&
+      this.data.timeSlots[this.data.selectedTimeIndex]
+        ? this.data.timeSlots[this.data.selectedTimeIndex].time
+        : null;
+
+    const slots = this.getSlotsByDateStr(
+      this.data.selectedConsultant,
+      selectedDate.dateStr,
+    );
+    const firstSlotIdx = this.findFirstAvailableSlot(slots);
+
+    let timeIndex = -1;
+    let message = null;
+
+    if (prevTime) {
+      const prevTimeIdx = slots.findIndex(
+        (s) => s.time === prevTime && !s.isFull,
+      );
+      if (prevTimeIdx !== -1) {
+        timeIndex = prevTimeIdx;
+      } else if (firstSlotIdx !== -1) {
+        timeIndex = firstSlotIdx;
+        message = `所选时段已不可用，已自动切换到 ${slots[timeIndex].time}`;
+      }
+    } else {
+      timeIndex = firstSlotIdx;
+    }
+
+    this.setData(
+      {
+        selectedDateIndex: index,
+        selectedTimeIndex: timeIndex,
+        timeSlots: slots,
+      },
+      () => {
+        if (message) {
+          Toast({
+            context: this,
+            selector: "#t-toast",
+            message: message,
+            theme: "warning",
+            direction: "column",
+            placement: "middle",
+          });
+        }
+      },
+    );
   },
 
   // 选择时间段
