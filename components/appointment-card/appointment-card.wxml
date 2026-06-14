@@ -285,8 +285,8 @@
   <t-dialog
     visible="{{ showContactDialog }}"
     title="联系专家"
-    confirm-btn="{{ { content: '复制电话', variant: 'base' } }}"
-    cancel-btn="关闭"
+    confirm-btn="{{ { content: isActionSubmitting ? '复制中...' : '复制电话', variant: 'base', loading: isActionSubmitting, disabled: isActionSubmitting } }}"
+    cancel-btn="{{ { content: '关闭', disabled: isActionSubmitting } }}"
     bind:confirm="onConfirmContact"
     bind:cancel="onCloseDialog"
     data-type="Contact"
@@ -312,9 +312,9 @@
     title="{{ confirmTitle }}"
     content="{{ confirmContent }}"
     confirm-btn="{{
-      { content: confirmText, variant: 'base', theme: 'danger' }
+      { content: isActionSubmitting ? '提交中...' : confirmText, variant: 'base', theme: 'danger', loading: isActionSubmitting, disabled: isActionSubmitting }
     }}"
-    cancel-btn="{{ cancelText }}"
+    cancel-btn="{{ { content: cancelText, disabled: isActionSubmitting } }}"
     bind:confirm="onConfirmAction"
     bind:cancel="onCloseDialog"
     data-type="Confirm"
@@ -324,9 +324,9 @@
     visible="{{ showEvalDialog }}"
     title="咨询评估"
     confirm-btn="{{
-      { content: '确认提交', variant: 'base', theme: 'primary' }
+      { content: isActionSubmitting ? '提交中...' : '确认提交', variant: 'base', theme: 'primary', loading: isActionSubmitting, disabled: isActionSubmitting }
     }}"
-    cancel-btn="取消"
+    cancel-btn="{{ { content: '取消', disabled: isActionSubmitting } }}"
     bind:confirm="onConfirmEval"
     bind:cancel="onCloseDialog"
     data-type="Eval"

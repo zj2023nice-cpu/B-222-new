@@ -76,6 +76,8 @@
                 size="extra-small"
                 shape="round"
                 variant="{{ item.isBooked ? 'light' : 'base' }}"
+                disabled="{{ isBookingSubmitting || isCancelSubmitting || isJoinWaitlistSubmitting || isCancelWaitlistSubmitting || isSilentRefreshing }}"
+                loading="{{ (isBookingSubmitting || isCancelSubmitting) && selectedConsultantIndex === index }}"
                 catchtap="book"
                 data-index="{{ index }}"
                 class="book-btn-mini"
@@ -248,8 +250,8 @@
 <t-dialog
   visible="{{ showBookDialog }}"
   title="预约确认"
-  confirm-btn="{{ { content: '确定预约', variant: 'base' } }}"
-  cancel-btn="取消"
+  confirm-btn="{{ { content: isBookingSubmitting ? '提交中...' : '确定预约', variant: 'base', loading: isBookingSubmitting, disabled: isBookingSubmitting } }}"
+  cancel-btn="{{ { content: '取消', disabled: isBookingSubmitting } }}"
   bind:confirm="confirmBooking"
   bind:cancel="closeBookDialog"
 >
@@ -277,8 +279,8 @@
 <t-dialog
   visible="{{ showCancelDialog }}"
   title="取消预约"
-  confirm-btn="{{ { content: '确定取消', variant: 'base', theme: 'danger' } }}"
-  cancel-btn="保留预约"
+  confirm-btn="{{ { content: isCancelSubmitting ? '提交中...' : '确定取消', variant: 'base', theme: 'danger', loading: isCancelSubmitting, disabled: isCancelSubmitting } }}"
+  cancel-btn="{{ { content: '保留预约', disabled: isCancelSubmitting } }}"
   bind:confirm="confirmCancelBooking"
   bind:cancel="closeCancelDialog"
 >
@@ -304,8 +306,8 @@
 <t-dialog
   visible="{{ showWaitlistDialog }}"
   title="候补登记"
-  confirm-btn="{{ { content: '确定候补', variant: 'base', theme: 'warning' } }}"
-  cancel-btn="取消"
+  confirm-btn="{{ { content: isJoinWaitlistSubmitting ? '提交中...' : '确定候补', variant: 'base', theme: 'warning', loading: isJoinWaitlistSubmitting, disabled: isJoinWaitlistSubmitting } }}"
+  cancel-btn="{{ { content: '取消', disabled: isJoinWaitlistSubmitting } }}"
   bind:confirm="confirmJoinWaitlist"
   bind:cancel="closeWaitlistDialog"
 >
@@ -325,8 +327,8 @@
 <t-dialog
   visible="{{ showCancelWaitlistDialog }}"
   title="退出候补"
-  confirm-btn="{{ { content: '确定退出', variant: 'base', theme: 'danger' } }}"
-  cancel-btn="保留候补"
+  confirm-btn="{{ { content: isCancelWaitlistSubmitting ? '提交中...' : '确定退出', variant: 'base', theme: 'danger', loading: isCancelWaitlistSubmitting, disabled: isCancelWaitlistSubmitting } }}"
+  cancel-btn="{{ { content: '保留候补', disabled: isCancelWaitlistSubmitting } }}"
   bind:confirm="confirmCancelWaitlist"
   bind:cancel="closeCancelWaitlistDialog"
 >

@@ -37,6 +37,12 @@ Page({
 
     showDetailPanel: false,
     detailConsultant: null,
+
+    isBookingSubmitting: false,
+    isCancelSubmitting: false,
+    isJoinWaitlistSubmitting: false,
+    isCancelWaitlistSubmitting: false,
+    isSilentRefreshing: false,
   },
 
   findFirstAvailableSlot(slots) {
@@ -178,21 +184,20 @@ Page({
   },
 
   async fetchConsultants(silent = false) {
+    if (silent && this.data.isSilentRefreshing) return;
     if (!silent) this.setData({ isLoading: true });
+    if (silent) this.setData({ isSilentRefreshing: true });
     try {
       const userInfo = wx.getStorageSync("userInfo");
       if (!userInfo) return;
 
-      // 如果是下拉刷新，强制等待1秒，让用户感知到刷新效果
       if (this.data.isRefreshing) {
         await new Promise((resolve) => setTimeout(resolve, 800));
       }
 
-      // 1. 动态生成未来 3 天的日期
       const dates = this.getNextNDays(3);
       this.setData({ availableDates: dates });
 
-      // 2. 调用服务获取所有咨询师及其真实排班
       const { data: allConsultants, hasActiveAppt } =
         await appointmentService.getConsultants(dates);
 
@@ -216,15 +221,18 @@ Page({
       );
     } catch (err) {
       console.error("获取咨询数据失败", err);
-      Toast({
-        context: this,
-        selector: "#t-toast",
-        message: "数据加载失败",
-        theme: "error",
-        direction: "column",
-      });
+      if (!silent) {
+        Toast({
+          context: this,
+          selector: "#t-toast",
+          message: "数据加载失败",
+          theme: "error",
+          direction: "column",
+        });
+      }
     } finally {
       if (!silent) this.setData({ isLoading: false });
+      if (silent) this.setData({ isSilentRefreshing: false });
     }
   },
 
@@ -301,6 +309,17 @@ Page({
 
   // 点击预约按钮：打开排班选择或取消预约
   book(e) {
+    if (
+      this.data.isBookingSubmitting ||
+      this.data.isCancelSubmitting ||
+      this.data.isJoinWaitlistSubmitting ||
+      this.data.isCancelWaitlistSubmitting
+    ) {
+      return;
+    }
+    if (this.data.showSchedulePopup || this.data.showCancelDialog) {
+      return;
+    }
     const { index } = e.currentTarget.dataset;
     const consultant = this.data.consultants[index];
 
@@ -377,6 +396,14 @@ Page({
   },
 
   onClosePopup() {
+    if (
+      this.data.isBookingSubmitting ||
+      this.data.isCancelSubmitting ||
+      this.data.isJoinWaitlistSubmitting ||
+      this.data.isCancelWaitlistSubmitting
+    ) {
+      return;
+    }
     this.setData({ showSchedulePopup: false });
   },
 
@@ -447,6 +474,14 @@ Page({
 
   // 打开确认弹窗
   handleConfirmSelection() {
+    if (
+      this.data.isBookingSubmitting ||
+      this.data.isCancelSubmitting ||
+      this.data.isJoinWaitlistSubmitting ||
+      this.data.isCancelWaitlistSubmitting
+    ) {
+      return;
+    }
     if (this.data.selectedTimeIndex === -1) {
       Toast({
         context: this,
@@ -454,6 +489,7 @@ Page({
         message: "请选择时间",
         theme: "warning",
         direction: "column",
+        placement: "middle",
       });
       return;
     }
@@ -464,17 +500,19 @@ Page({
   },
 
   closeBookDialog() {
+    if (this.data.isBookingSubmitting) return;
     this.setData({ showBookDialog: false });
   },
 
   async confirmBooking() {
+    if (this.data.isBookingSubmitting) return;
     const index = this.data.selectedConsultantIndex;
     const consultant = this.data.selectedConsultant;
     const dateStr =
       this.data.availableDates[this.data.selectedDateIndex].dateStr;
     const time = this.data.timeSlots[this.data.selectedTimeIndex].time;
 
-    this.setData({ showBookDialog: false });
+    this.setData({ isBookingSubmitting: true });
 
     try {
       const { _id } = await appointmentService.book({
@@ -486,7 +524,8 @@ Page({
         time: time,
       });
 
-      // 更新本地状态
+      this.setData({ showBookDialog: false });
+
       const updateData = {};
       const prefix = `consultants[${index}]`;
       updateData[`${prefix}.isBooked`] = true;
@@ -495,7 +534,7 @@ Page({
       updateData[`${prefix}.bookedTime`] = time;
 
       this.setData(updateData);
-      this.fetchConsultants(true); // 静默刷新，同步排班状态
+      this.fetchConsultants(true);
 
       Toast({
         context: this,
@@ -513,22 +552,27 @@ Page({
         direction: "column",
       });
     } finally {
+      this.setData({ isBookingSubmitting: false });
     }
   },
 
   // 取消预约逻辑
   closeCancelDialog() {
+    if (this.data.isCancelSubmitting) return;
     this.setData({ showCancelDialog: false });
   },
 
   async confirmCancelBooking() {
+    if (this.data.isCancelSubmitting) return;
     const index = this.data.selectedConsultantIndex;
     const consultant = this.data.consultants[index];
 
-    this.setData({ showCancelDialog: false });
+    this.setData({ isCancelSubmitting: true });
 
     try {
       await appointmentService.cancel(consultant.bookedId);
+
+      this.setData({ showCancelDialog: false });
 
       const updateData = {};
       const prefix = `consultants[${index}]`;
@@ -552,18 +596,28 @@ Page({
       Toast({
         context: this,
         selector: "#t-toast",
-        message: "操作失败",
+        message: err.message || "操作失败",
         theme: "error",
         direction: "column",
       });
     } finally {
+      this.setData({ isCancelSubmitting: false });
     }
   },
 
   onJoinWaitlist() {
+    if (
+      this.data.isBookingSubmitting ||
+      this.data.isCancelSubmitting ||
+      this.data.isJoinWaitlistSubmitting ||
+      this.data.isCancelWaitlistSubmitting
+    ) {
+      return;
+    }
     const selectedDate = this.data.availableDates[this.data.selectedDateIndex];
     if (!selectedDate || !selectedDate.isFull) return;
     if (selectedDate.waitlistStatus) return;
+    if (this.data.showWaitlistDialog) return;
 
     this.setData({
       showSchedulePopup: false,
@@ -573,14 +627,16 @@ Page({
   },
 
   closeWaitlistDialog() {
+    if (this.data.isJoinWaitlistSubmitting) return;
     this.setData({ showWaitlistDialog: false });
   },
 
   async confirmJoinWaitlist() {
+    if (this.data.isJoinWaitlistSubmitting) return;
     const consultant = this.data.selectedConsultant;
     const dateStr = this.data.waitlistDateStr;
 
-    this.setData({ showWaitlistDialog: false });
+    this.setData({ isJoinWaitlistSubmitting: true });
 
     try {
       const { data } = await appointmentService.joinWaitlist({
@@ -591,6 +647,7 @@ Page({
         dateStr,
       });
 
+      this.setData({ showWaitlistDialog: false });
       this.fetchConsultants(true);
 
       Toast({
@@ -608,12 +665,23 @@ Page({
         theme: "error",
         direction: "column",
       });
+    } finally {
+      this.setData({ isJoinWaitlistSubmitting: false });
     }
   },
 
   onCancelWaitlist() {
+    if (
+      this.data.isBookingSubmitting ||
+      this.data.isCancelSubmitting ||
+      this.data.isJoinWaitlistSubmitting ||
+      this.data.isCancelWaitlistSubmitting
+    ) {
+      return;
+    }
     const selectedDate = this.data.availableDates[this.data.selectedDateIndex];
     if (!selectedDate || !selectedDate.waitlistId) return;
+    if (this.data.showCancelWaitlistDialog) return;
 
     this.setData({
       showSchedulePopup: false,
@@ -622,17 +690,20 @@ Page({
   },
 
   closeCancelWaitlistDialog() {
+    if (this.data.isCancelWaitlistSubmitting) return;
     this.setData({ showCancelWaitlistDialog: false });
   },
 
   async confirmCancelWaitlist() {
+    if (this.data.isCancelWaitlistSubmitting) return;
     const selectedDate = this.data.availableDates[this.data.selectedDateIndex];
 
-    this.setData({ showCancelWaitlistDialog: false });
+    this.setData({ isCancelWaitlistSubmitting: true });
 
     try {
       await appointmentService.cancelWaitlist(selectedDate.waitlistId);
 
+      this.setData({ showCancelWaitlistDialog: false });
       this.fetchConsultants(true);
 
       Toast({
@@ -650,6 +721,8 @@ Page({
         theme: "error",
         direction: "column",
       });
+    } finally {
+      this.setData({ isCancelWaitlistSubmitting: false });
     }
   },
 });

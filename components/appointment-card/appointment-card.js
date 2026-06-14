@@ -42,6 +42,8 @@ Component({
     cancelText: "取消",
     currentAction: "", // cancel, delete, reject, confirm, complete
 
+    isActionSubmitting: false,
+
     // Evaluation data
     evalScore: 5,
     evalResult: "",
@@ -56,13 +58,15 @@ Component({
   },
   methods: {
     onAction(e) {
+      if (this.data.isActionSubmitting) return;
       const { action } = e.currentTarget.dataset;
       const { item } = this.properties;
 
-      // 1. 根据动作类型决定是直接抛出事件，还是先弹窗确认
       if (action === "contact") {
+        if (this.data.showContactDialog) return;
         this.setData({ showContactDialog: true });
       } else if (action === "cancel") {
+        if (this.data.showConfirmDialog) return;
         this.setData({
           showConfirmDialog: true,
           currentAction: "cancel",
@@ -72,6 +76,7 @@ Component({
           cancelText: "保留预约",
         });
       } else if (action === "cancelWaitlist") {
+        if (this.data.showConfirmDialog) return;
         this.setData({
           showConfirmDialog: true,
           currentAction: "cancelWaitlist",
@@ -85,6 +90,7 @@ Component({
           url: "/pages/student/appointment/appointment",
         });
       } else if (action === "delete") {
+        if (this.data.showConfirmDialog) return;
         this.setData({
           showConfirmDialog: true,
           currentAction: "delete",
@@ -94,13 +100,13 @@ Component({
           cancelText: "取消",
         });
       } else if (action === "evaluate") {
+        if (this.data.showEvalDialog) return;
         this.setData({
           showEvalDialog: true,
           evalScore: 5,
           evalResult: "",
         });
       } else {
-        // 其他动作（如 reject, confirm, complete）直接抛出，由页面决定是否需要额外处理
         this.triggerEvent("action", {
           action,
           index: this.properties.index,
@@ -109,29 +115,36 @@ Component({
       }
     },
 
-    // 确认联系动作
     onConfirmContact() {
+      if (this.data.isActionSubmitting) return;
+      this.setData({ isActionSubmitting: true });
       wx.setClipboardData({
         data: this.properties.contactPhone,
         success: () => {
           this.setData({ showContactDialog: false });
         },
+        complete: () => {
+          this.setData({ isActionSubmitting: false });
+        },
       });
     },
 
-    // 确认通用动作 (cancel, delete)
     onConfirmAction() {
+      if (this.data.isActionSubmitting) return;
       const { currentAction } = this.data;
-      this.setData({ showConfirmDialog: false });
+      this.setData({ isActionSubmitting: true, showConfirmDialog: false });
       this.triggerEvent("action", {
         action: currentAction,
         index: this.properties.index,
         item: this.properties.item,
       });
+      setTimeout(() => {
+        this.setData({ isActionSubmitting: false });
+      }, 800);
     },
 
-    // 确认评估动作
     onConfirmEval() {
+      if (this.data.isActionSubmitting) return;
       const { evalScore, evalResult } = this.data;
       if (!evalScore || !evalResult) {
         Toast({
@@ -143,8 +156,7 @@ Component({
         });
         return;
       }
-      // 移除这里的立即关闭，交给父页面在接口成功后处理
-      // this.setData({ showEvalDialog: false });
+      this.setData({ isActionSubmitting: true });
       this.triggerEvent("action", {
         action: "evaluate",
         index: this.properties.index,
@@ -153,15 +165,18 @@ Component({
       });
     },
 
-    // 关闭任何弹窗
     onCloseDialog(e) {
+      if (this.data.isActionSubmitting) return;
       const { type } = e.currentTarget.dataset;
       this.setData({ [`show${type}Dialog`]: false });
     },
 
-    // 供父页面调用的公开方法
     hideEvalDialog() {
-      this.setData({ showEvalDialog: false });
+      this.setData({ showEvalDialog: false, isActionSubmitting: false });
+    },
+
+    resetActionLock() {
+      this.setData({ isActionSubmitting: false });
     },
 
     // 评分/输入变更

@@ -34,6 +34,11 @@ Page({
     stickyProps: {
       offsetTop: 0,
     },
+    isCancelling: false,
+    isDeleting: false,
+    isCancellingWaitlist: false,
+    isMarkingRead: false,
+    isFetching: false,
   },
 
   onLoad() {
@@ -49,9 +54,11 @@ Page({
   },
 
   async fetchAppointments(isSilent = false) {
+    if (this.data.isFetching) return;
     if (!isSilent) {
       this.setData({ isLoading: true });
     }
+    this.setData({ isFetching: true });
     try {
       const { data } = await appointmentService.getMyList();
       const allAppointments = data || [];
@@ -111,6 +118,8 @@ Page({
         theme: "error",
         direction: "column",
       });
+    } finally {
+      this.setData({ isFetching: false });
     }
   },
 
@@ -163,12 +172,14 @@ Page({
   },
 
   async markRejectedAsRead() {
+    if (this.data.isMarkingRead) return;
     const unreadIds = this.data.allAppointments
       .filter((a) => a.status === "rejected" && !a.studentRead)
       .map((a) => a._id);
 
     if (unreadIds.length === 0) return;
 
+    this.setData({ isMarkingRead: true });
     try {
       await appointmentService.markAsRead(unreadIds);
       const allAppointments = this.data.allAppointments.map((a) => {
@@ -183,6 +194,8 @@ Page({
       });
     } catch (err) {
       console.error("标记已读失败", err);
+    } finally {
+      this.setData({ isMarkingRead: false });
     }
   },
 
@@ -205,6 +218,13 @@ Page({
   },
 
   async onCardAction(e) {
+    if (
+      this.data.isCancelling ||
+      this.data.isDeleting ||
+      this.data.isCancellingWaitlist
+    ) {
+      return;
+    }
     const { action, item } = e.detail;
     if (action === "cancel") {
       await this.handleCancel(item._id);
@@ -216,6 +236,8 @@ Page({
   },
 
   async handleCancelWaitlist(waitlistId) {
+    if (this.data.isCancellingWaitlist) return;
+    this.setData({ isCancellingWaitlist: true });
     try {
       await appointmentService.cancelWaitlist(waitlistId);
 
@@ -239,18 +261,21 @@ Page({
       Toast({
         context: this,
         selector: "#t-toast",
-        message: "操作失败",
+        message: err.message || "操作失败",
         theme: "error",
         direction: "column",
       });
+    } finally {
+      this.setData({ isCancellingWaitlist: false });
     }
   },
 
   async handleCancel(id) {
+    if (this.data.isCancelling) return;
+    this.setData({ isCancelling: true });
     try {
       await appointmentService.updateStatus(id, "cancelled");
 
-      // 1. 更新全量数据中的状态
       const allAppointments = this.data.allAppointments.map((a) => {
         if (a._id === id) {
           return { ...a, status: "cancelled", processTimeDisplay: "刚刚" };
@@ -258,7 +283,6 @@ Page({
         return a;
       });
 
-      // 2. 重新计算徽标数量
       const pendingCount = allAppointments.filter(
         (a) => a.status === "booked",
       ).length;
@@ -277,7 +301,6 @@ Page({
           rejectedCount,
         },
         () => {
-          // 3. 重新过滤当前视图
           this.filterList();
         },
       );
@@ -294,23 +317,25 @@ Page({
       Toast({
         context: this,
         selector: "#t-toast",
-        message: "操作失败",
+        message: err.message || "操作失败",
         theme: "error",
         direction: "column",
       });
+    } finally {
+      this.setData({ isCancelling: false });
     }
   },
 
   async handleDelete(id) {
+    if (this.data.isDeleting) return;
+    this.setData({ isDeleting: true });
     try {
       await appointmentService.delete(id, "student");
 
-      // 1. 更新全量数据
       const allAppointments = this.data.allAppointments.filter(
         (a) => a._id !== id,
       );
 
-      // 2. 重新计算徽标数量
       const pendingCount = allAppointments.filter(
         (a) => a.status === "booked",
       ).length;
@@ -329,7 +354,6 @@ Page({
           rejectedCount,
         },
         () => {
-          // 3. 刷新视图
           this.filterList();
         },
       );
@@ -346,10 +370,12 @@ Page({
       Toast({
         context: this,
         selector: "#t-toast",
-        message: "删除失败",
+        message: err.message || "删除失败",
         theme: "error",
         direction: "column",
       });
+    } finally {
+      this.setData({ isDeleting: false });
     }
   },
 
