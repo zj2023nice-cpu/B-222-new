@@ -166,10 +166,10 @@ SafePage({
   },
 
   goBack() {
-    wx.navigateBack({
+    router.navigateBack({
       delta: 1,
       fail: () => {
-        wx.redirectTo({ url: "/pages/student/assessment/assessment" });
+        router.redirectTo({ url: "/pages/student/assessment/assessment" });
       },
     });
   },

@@ -240,7 +240,8 @@ Component({
         if (assessmentId) {
           router.navigateTo({
             url: `/pages/student/assessment/assessment-detail/assessment-detail?id=${assessmentId}&title=${encodeURIComponent(title)}`,
-            fail: () => {
+            fail: (err) => {
+              if (err && err.__routerGuard && err.reason === "unauthorized") return;
               router.navigateTo({
                 url: `/pages/student/exam-records/exam-records`,
                 fail: () => {},
@@ -256,12 +257,16 @@ Component({
       } else if (item.type === "appointment") {
         router.navigateTo({
           url: `/pages/student/appointment-list/appointment-list`,
-          fail: () => {},
+          fail: (err) => {
+            if (err && err.__routerGuard) return;
+          },
         });
       } else if (item.type === "mood") {
         router.navigateTo({
           url: `/pages/student/mood/mood?activeTab=history`,
-          fail: () => {},
+          fail: (err) => {
+            if (err && err.__routerGuard) return;
+          },
         });
       }
     },

@@ -266,18 +266,65 @@ export default {
   },
 
   _doNavigate(method, url, options = {}) {
+    const {
+      success,
+      fail,
+      complete,
+      events,
+      ...restOpts
+    } = options;
+
     return new Promise((resolve, reject) => {
-      const params = {
-        success: resolve,
-        fail: reject,
+      const params = {};
+      let completeFired = false;
+      const fireComplete = (res) => {
+        if (completeFired) return;
+        completeFired = true;
+        if (typeof complete === "function") {
+          try { complete(res); } catch (e) { console.warn("[Router] complete callback error:", e); }
+        }
       };
+
       if (method === "navigateBack") {
-        params.delta = options.delta || 1;
+        params.delta = restOpts.delta || 1;
       } else {
         params.url = url;
       }
+
+      if (events && method === "navigateTo") {
+        params.events = events;
+      }
+
+      params.success = (res) => {
+        if (typeof success === "function") {
+          try { success(res); } catch (e) { console.warn("[Router] success callback error:", e); }
+        }
+        fireComplete(res);
+        resolve(res);
+      };
+
+      params.fail = (err) => {
+        if (typeof fail === "function") {
+          try { fail(err); } catch (e) { console.warn("[Router] fail callback error:", e); }
+        }
+        fireComplete(err);
+        reject(err);
+      };
+
+      params.complete = fireComplete;
+
       wx[method](params);
     });
+  },
+
+  _buildGuardError(method, reason, redirect, targetUrl) {
+    return {
+      errMsg: `${method}:fail guard_${reason}`,
+      __routerGuard: true,
+      reason,
+      redirect,
+      targetUrl,
+    };
   },
 
   async navigateTo(arg0, arg1) {
@@ -289,11 +336,14 @@ export default {
       if (access.reason === "unauthorized") {
         this.setRedirect(url);
       }
-      return this._doNavigate("reLaunch", access.redirect);
+      const guardErr = this._buildGuardError("navigateTo", access.reason, access.redirect, url);
+      this._invokeCallbacks(options, null, guardErr);
+      this._doNavigate("reLaunch", access.redirect).catch(() => {});
+      return Promise.reject(guardErr);
     }
 
     if (isTabPage(url)) {
-      return this._doNavigate("switchTab", normalizePath(url));
+      return this._doNavigate("switchTab", normalizePath(url), options);
     }
 
     return this._doNavigate("navigateTo", url, options);
@@ -309,14 +359,17 @@ export default {
       if (access.reason === "unauthorized") {
         this.setRedirect(target);
       }
-      return this._doNavigate("reLaunch", access.redirect);
+      const guardErr = this._buildGuardError("switchTab", access.reason, access.redirect, target);
+      this._invokeCallbacks(options, null, guardErr);
+      this._doNavigate("reLaunch", access.redirect).catch(() => {});
+      return Promise.reject(guardErr);
     }
 
     if (!isTabPage(target)) {
       return this._doNavigate("navigateTo", url, options);
     }
 
-    return this._doNavigate("switchTab", target);
+    return this._doNavigate("switchTab", target, options);
   },
 
   async reLaunch(arg0, arg1) {
@@ -328,18 +381,75 @@ export default {
       if (access.reason === "unauthorized") {
         this.setRedirect(url);
       }
-      return this._doNavigate("reLaunch", access.redirect);
+      const guardErr = this._buildGuardError("reLaunch", access.reason, access.redirect, url);
+      this._invokeCallbacks(options, null, guardErr);
+      this._doNavigate("reLaunch", access.redirect).catch(() => {});
+      return Promise.reject(guardErr);
     }
 
     if (isTabPage(url)) {
-      return this._doNavigate("switchTab", normalizePath(url));
+      return this._doNavigate("switchTab", normalizePath(url), options);
     }
 
     return this._doNavigate("reLaunch", url, options);
   },
 
-  navigateBack(delta = 1) {
-    return this._doNavigate("navigateBack", "", { delta });
+  _invokeCallbacks(options, successRes, failErr) {
+    const { success, fail, complete } = options || {};
+    let completeFired = false;
+    const fireComplete = (res) => {
+      if (completeFired) return;
+      completeFired = true;
+      if (typeof complete === "function") {
+        try { complete(res); } catch (e) { console.warn("[Router] complete callback error:", e); }
+      }
+    };
+    if (failErr) {
+      if (typeof fail === "function") {
+        try { fail(failErr); } catch (e) { console.warn("[Router] fail callback error:", e); }
+      }
+      fireComplete(failErr);
+    } else {
+      if (typeof success === "function") {
+        try { success(successRes); } catch (e) { console.warn("[Router] success callback error:", e); }
+      }
+      fireComplete(successRes);
+    }
+  },
+
+  navigateBack(arg0 = 1, arg1 = {}) {
+    let delta = 1;
+    let options = {};
+    if (typeof arg0 === "number") {
+      delta = arg0;
+      options = arg1 || {};
+    } else if (arg0 && typeof arg0 === "object") {
+      delta = arg0.delta || 1;
+      options = arg1 || arg0;
+    }
+    return this._doNavigate("navigateBack", "", { ...options, delta });
+  },
+
+  async redirectTo(arg0, arg1) {
+    const { url, options } = _normalizeArgs(arg0, arg1);
+    const userInfo = this.getUserInfo();
+    const access = this.checkAccess(url, userInfo);
+
+    if (!access.canAccess) {
+      if (access.reason === "unauthorized") {
+        this.setRedirect(url);
+      }
+      const guardErr = this._buildGuardError("redirectTo", access.reason, access.redirect, url);
+      this._invokeCallbacks(options, null, guardErr);
+      this._doNavigate("reLaunch", access.redirect).catch(() => {});
+      return Promise.reject(guardErr);
+    }
+
+    if (isTabPage(url)) {
+      return this._doNavigate("switchTab", normalizePath(url), options);
+    }
+
+    return this._doNavigate("redirectTo", url, options);
   },
 
   goAfterLogin(role) {
