@@ -138,9 +138,6 @@ Component({
         index: this.properties.index,
         item: this.properties.item,
       });
-      setTimeout(() => {
-        this.setData({ isActionSubmitting: false });
-      }, 800);
     },
 
     onConfirmEval() {

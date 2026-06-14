@@ -217,6 +217,14 @@ Page({
     await this.fetchAppointments(true);
   },
 
+  resetCardLock(cardIndex) {
+    if (cardIndex === undefined || cardIndex === null || cardIndex < 0) return;
+    const card = this.selectComponent(`#appt-card-${cardIndex}`);
+    if (card && typeof card.resetActionLock === "function") {
+      card.resetActionLock();
+    }
+  },
+
   async onCardAction(e) {
     if (
       this.data.isCancelling ||
@@ -225,17 +233,17 @@ Page({
     ) {
       return;
     }
-    const { action, item } = e.detail;
+    const { action, item, index } = e.detail;
     if (action === "cancel") {
-      await this.handleCancel(item._id);
+      await this.handleCancel(item._id, index);
     } else if (action === "delete") {
-      await this.handleDelete(item._id);
+      await this.handleDelete(item._id, index);
     } else if (action === "cancelWaitlist") {
-      await this.handleCancelWaitlist(item._id);
+      await this.handleCancelWaitlist(item._id, index);
     }
   },
 
-  async handleCancelWaitlist(waitlistId) {
+  async handleCancelWaitlist(waitlistId, cardIndex) {
     if (this.data.isCancellingWaitlist) return;
     this.setData({ isCancellingWaitlist: true });
     try {
@@ -267,10 +275,11 @@ Page({
       });
     } finally {
       this.setData({ isCancellingWaitlist: false });
+      this.resetCardLock(cardIndex);
     }
   },
 
-  async handleCancel(id) {
+  async handleCancel(id, cardIndex) {
     if (this.data.isCancelling) return;
     this.setData({ isCancelling: true });
     try {
@@ -323,10 +332,11 @@ Page({
       });
     } finally {
       this.setData({ isCancelling: false });
+      this.resetCardLock(cardIndex);
     }
   },
 
-  async handleDelete(id) {
+  async handleDelete(id, cardIndex) {
     if (this.data.isDeleting) return;
     this.setData({ isDeleting: true });
     try {
@@ -376,6 +386,7 @@ Page({
       });
     } finally {
       this.setData({ isDeleting: false });
+      this.resetCardLock(cardIndex);
     }
   },
 

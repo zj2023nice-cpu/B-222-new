@@ -60,6 +60,7 @@
     <!-- 预约列表 -->
     <view wx:else class="appointment-list">
       <appointment-card
+        id="appt-card-{{index}}"
         wx:for="{{ appointments }}"
         wx:key="_id"
         item="{{ item }}"

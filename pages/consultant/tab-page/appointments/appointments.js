@@ -25,6 +25,10 @@ Component({
       offsetTop: 0,
     },
     pendingCount: 0,
+    isUpdatingStatus: false,
+    isEvaluating: false,
+    isDeleting: false,
+    isFetching: false,
     rowCol: [
       [
         {
@@ -85,10 +89,27 @@ Component({
       await this.fetchAppointments(true);
     },
 
+    resetCardLock(cardIndex) {
+      if (cardIndex === undefined || cardIndex === null || cardIndex < 0) return;
+      const card = this.selectComponent(`#appt-card-${cardIndex}`);
+      if (card && typeof card.resetActionLock === "function") {
+        card.resetActionLock();
+      }
+    },
+    hideCardEvalDialog(cardIndex) {
+      if (cardIndex === undefined || cardIndex === null || cardIndex < 0) return;
+      const card = this.selectComponent(`#appt-card-${cardIndex}`);
+      if (card && typeof card.hideEvalDialog === "function") {
+        card.hideEvalDialog();
+      }
+    },
+
     async fetchAppointments(isSilent = false) {
+      if (this.data.isFetching) return;
       if (!isSilent) {
         this.setData({ isLoading: true });
       }
+      this.setData({ isFetching: true });
       try {
         const { data } = await appointmentService.getConsultantAppts();
         const pendingCount = data.filter(
@@ -120,7 +141,7 @@ Component({
           direction: "column",
         });
       } finally {
-        this.setData({ isLoading: false, isRefreshing: false });
+        this.setData({ isLoading: false, isRefreshing: false, isFetching: false });
       }
     },
 
@@ -156,6 +177,13 @@ Component({
     },
 
     async onCardAction(e) {
+      if (
+        this.data.isUpdatingStatus ||
+        this.data.isEvaluating ||
+        this.data.isDeleting
+      ) {
+        return;
+      }
       const { action, index, item, evaluation } = e.detail;
       const id = item._id;
 
@@ -170,20 +198,22 @@ Component({
             : action === "confirm"
               ? "confirmed"
               : "completed";
-        await this.handleUpdateStatus(id, status);
+        await this.handleUpdateStatus(id, status, index);
       } else if (action === "evaluate") {
         await this.handleEvaluate(id, item, evaluation, index);
       } else if (action === "delete") {
-        await this.handleDelete(id);
+        await this.handleDelete(id, index);
       }
     },
 
-    async handleUpdateStatus(id, status) {
+    async handleUpdateStatus(id, status, cardIndex) {
+      if (this.data.isUpdatingStatus) return;
       const actionMap = {
         confirmed: "接受预约",
         rejected: "拒绝预约",
         completed: "咨询结束",
       };
+      this.setData({ isUpdatingStatus: true });
       try {
         await appointmentService.updateStatus(id, status);
         await this.fetchAppointments();
@@ -199,15 +229,19 @@ Component({
         Toast({
           context: this,
           selector: "#t-toast",
-          message: "操作失败",
+          message: err.message || "操作失败",
           theme: "error",
           direction: "column",
         });
+      } finally {
+        this.setData({ isUpdatingStatus: false });
+        this.resetCardLock(cardIndex);
       }
     },
 
-    async handleEvaluate(id, item, evaluation, index) {
-      // 1. 显示提交中状态
+    async handleEvaluate(id, item, evaluation, cardIndex) {
+      if (this.data.isEvaluating) return;
+      this.setData({ isEvaluating: true });
       Toast({
         context: this,
         selector: "#t-toast",
@@ -227,7 +261,6 @@ Component({
           studentAvatar: item.studentAvatar,
         });
 
-        // 2. 显示成功提示，设置 2 秒时长
         Toast({
           context: this,
           selector: "#t-toast",
@@ -237,8 +270,8 @@ Component({
           duration: 2000,
         });
 
-        // 3. 2 秒后刷新数据
-        // 由于组件内设置了 observer，一旦数据刷新 item.feedback 出现，弹窗会自动关闭
+        this.hideCardEvalDialog(cardIndex);
+
         setTimeout(async () => {
           await this.fetchAppointments(true);
         }, 2000);
@@ -251,10 +284,15 @@ Component({
           theme: "error",
           direction: "column",
         });
+      } finally {
+        this.setData({ isEvaluating: false });
+        this.resetCardLock(cardIndex);
       }
     },
 
-    async handleDelete(id) {
+    async handleDelete(id, cardIndex) {
+      if (this.data.isDeleting) return;
+      this.setData({ isDeleting: true });
       try {
         await appointmentService.delete(id, "consultant");
         await this.fetchAppointments();
@@ -270,10 +308,13 @@ Component({
         Toast({
           context: this,
           selector: "#t-toast",
-          message: "删除失败",
+          message: err.message || "删除失败",
           theme: "error",
           direction: "column",
         });
+      } finally {
+        this.setData({ isDeleting: false });
+        this.resetCardLock(cardIndex);
       }
     },
 
