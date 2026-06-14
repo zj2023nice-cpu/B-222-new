@@ -30,6 +30,22 @@
         <view class="welcome-tips">一切记录均已通过云端加密</view>
       </view>
 
+      <view class="suggestion-section" wx:if="{{ showSuggestions && messages.length === 0 }}">
+        <view class="suggestion-title">试试问我这些问题</view>
+        <view class="suggestion-list">
+          <view
+            class="suggestion-item"
+            wx:for="{{ suggestionQuestions }}"
+            wx:key="*this"
+            data-question="{{ item }}"
+            bindtap="onSuggestionTap"
+          >
+            <t-icon name="chat" size="32rpx" color="#0052d9" />
+            <text class="suggestion-text">{{ item }}</text>
+          </view>
+        </view>
+      </view>
+
       <block wx:for="{{ messages }}" wx:key="id">
         <t-chat-message
           wx:if="{{ item.role === 'ai' }}"
@@ -59,6 +75,25 @@
               wx:if="{{ item.content }}"
               content="{{ { type: 'markdown', data: item.content } }}"
             />
+            <view
+              class="follow-up-section"
+              wx:if="{{ showFollowUps && followUpQuestions.length > 0 && index === 0 && item.status === 'success' }}"
+            >
+              <view class="follow-up-title">继续追问</view>
+              <view class="follow-up-list">
+                <view
+                  class="follow-up-item"
+                  wx:for="{{ followUpQuestions }}"
+                  wx:for-item="question"
+                  wx:key="*this"
+                  data-question="{{ question }}"
+                  bindtap="onFollowUpTap"
+                >
+                  <t-icon name="chevron-right" size="28rpx" color="#0052d9" />
+                  <text class="follow-up-text">{{ question }}</text>
+                </view>
+              </view>
+            </view>
           </view>
         </t-chat-message>
 

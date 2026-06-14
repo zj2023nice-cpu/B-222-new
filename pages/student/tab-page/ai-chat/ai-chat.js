@@ -1,5 +1,21 @@
 import aiService from "../../../../services/ai";
 
+const SUGGESTION_QUESTIONS = [
+  "最近总是失眠，有什么改善方法吗？",
+  "学习压力大，感觉焦虑怎么办？",
+  "和父母沟通总是吵架，怎么处理？",
+  "不知道未来的方向，很迷茫",
+  "朋友关系处理不好，感到孤独",
+  "总是情绪低落，怎么调整自己？",
+];
+
+const FOLLOW_UP_TEMPLATES = [
+  "能具体说说如何实践吗？",
+  "这个方法需要多久才能见效？",
+  "还有其他类似的建议吗？",
+  "我想更深入地了解这个话题",
+];
+
 Component({
   options: {
     multipleSlots: true,
@@ -19,6 +35,10 @@ Component({
     sessions: [],
     showDeleteConfirm: false,
     deleteTargetId: "",
+    showSuggestions: true,
+    suggestionQuestions: SUGGESTION_QUESTIONS,
+    showFollowUps: false,
+    followUpQuestions: [],
   },
 
   lifetimes: {
@@ -48,10 +68,16 @@ Component({
         aiService.saveSession(currentSession);
       }
 
+      const messages = currentSession.messages || [];
+      const hasMessages = messages.length > 0;
+
       this.setData({
         sessions: this._getFormattedSessions(),
         currentSession,
-        messages: currentSession.messages || [],
+        messages,
+        showSuggestions: !hasMessages,
+        showFollowUps: hasMessages,
+        followUpQuestions: hasMessages ? this._generateFollowUps(messages) : [],
       });
     },
 
@@ -114,6 +140,8 @@ Component({
         inputValue: "",
         isTyping: true,
         isLoading: true,
+        showSuggestions: false,
+        showFollowUps: false,
       });
       this._persistCurrentSession();
 
@@ -148,6 +176,23 @@ Component({
           crisisGuide: result.crisisGuide || null,
         });
         this._persistCurrentSession();
+
+        const updatedMessages = this.data.messages.map((m) => {
+          if (m.id === aiTempId) {
+            return {
+              ...m,
+              content: result.reply,
+              status: "success",
+              risk: result.risk || false,
+              crisisGuide: result.crisisGuide || null,
+            };
+          }
+          return m;
+        });
+        this.setData({
+          showFollowUps: true,
+          followUpQuestions: this._generateFollowUps(updatedMessages),
+        });
       } catch (err) {
         if (this.activeRequestId !== currentRequestId) return;
         console.error("AI chat failed", err);
@@ -218,6 +263,9 @@ Component({
         messages: [],
         currentView: "chat",
         sessions: this._getFormattedSessions(),
+        showSuggestions: true,
+        showFollowUps: false,
+        followUpQuestions: [],
       });
     },
 
@@ -225,10 +273,15 @@ Component({
       const { id } = e.currentTarget.dataset;
       const session = aiService.getSession(id);
       if (!session) return;
+      const messages = session.messages || [];
+      const hasMessages = messages.length > 0;
       this.setData({
         currentSession: session,
-        messages: session.messages || [],
+        messages,
         currentView: "chat",
+        showSuggestions: !hasMessages,
+        showFollowUps: hasMessages,
+        followUpQuestions: hasMessages ? this._generateFollowUps(messages) : [],
       });
     },
 
@@ -259,9 +312,14 @@ Component({
           currentSession = aiService.createSession();
           aiService.saveSession(currentSession);
         }
+        const messages = currentSession.messages || [];
+        const hasMessages = messages.length > 0;
         this.setData({
           currentSession,
-          messages: currentSession.messages || [],
+          messages,
+          showSuggestions: !hasMessages,
+          showFollowUps: hasMessages,
+          followUpQuestions: hasMessages ? this._generateFollowUps(messages) : [],
         });
       }
 
@@ -310,6 +368,42 @@ Component({
               : s.messages[0].content
             : "",
       }));
+    },
+
+    _generateFollowUps(messages) {
+      if (!messages || messages.length === 0) return [];
+
+      const lastAiMsg = messages.find((m) => m.role === "ai" && m.status === "success");
+      if (!lastAiMsg || !lastAiMsg.content) return [];
+
+      const content = lastAiMsg.content;
+      const followUps = [...FOLLOW_UP_TEMPLATES];
+
+      if (content.includes("方法") || content.includes("建议")) {
+        followUps.unshift("这个方法适合我这种情况吗？");
+      }
+      if (content.includes("压力") || content.includes("焦虑")) {
+        followUps.unshift("有什么快速缓解的小技巧吗？");
+      }
+      if (content.includes("沟通") || content.includes("关系")) {
+        followUps.unshift("遇到具体场景时该怎么应对？");
+      }
+
+      return followUps.slice(0, 3);
+    },
+
+    onSuggestionTap(e) {
+      const { question } = e.currentTarget.dataset;
+      if (!question || this.data.isTyping) return;
+      this.setData({ inputValue: question });
+      this.sendMessage({ detail: { value: question } });
+    },
+
+    onFollowUpTap(e) {
+      const { question } = e.currentTarget.dataset;
+      if (!question || this.data.isTyping) return;
+      this.setData({ inputValue: question });
+      this.sendMessage({ detail: { value: question } });
     },
   },
 });
