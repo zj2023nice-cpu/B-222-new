@@ -1,0 +1,14 @@
+{
+  "navigationBarTitleText": "文章详情",
+  "usingComponents": {
+    "t-skeleton": "tdesign-miniprogram/skeleton/skeleton",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-tag": "tdesign-miniprogram/tag/tag",
+    "t-image": "tdesign-miniprogram/image/image",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-overlay": "tdesign-miniprogram/overlay/overlay",
+    "t-divider": "tdesign-miniprogram/divider/divider",
+    "t-navbar": "tdesign-miniprogram/navbar/navbar"
+  }
+}

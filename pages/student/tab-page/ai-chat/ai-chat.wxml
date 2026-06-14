@@ -1,0 +1,169 @@
+<view class="chat-container">
+  <t-navbar title="AI 咨询" placeholder />
+
+  <block wx:if="{{ currentView === 'chat' }}">
+    <view class="chat-header-actions">
+      <view class="header-btn" bindtap="onNewSession">
+        <t-icon name="add" size="44rpx" />
+      </view>
+      <view class="header-btn" bindtap="onShowHistory">
+        <t-icon name="time" size="44rpx" />
+      </view>
+    </view>
+
+    <t-chat-list
+      class="chat-list"
+      id="chat-list"
+      layout="both"
+      animation="dots"
+      bind:scrolltop="onScrollTop"
+    >
+      <view class="welcome-card" wx:if="{{ messages.length === 0 }}">
+        <t-avatar
+          image="{{ aiAvatar }}"
+          size="120rpx"
+          shape="circle"
+          class="welcome-avatar"
+        />
+        <view class="welcome-title">我是心理咨询 AI 助手</view>
+        <view class="welcome-desc">在这里，你可以安心倾诉</view>
+        <view class="welcome-tips">一切记录均已通过云端加密</view>
+      </view>
+
+      <block wx:for="{{ messages }}" wx:key="id">
+        <t-chat-message
+          wx:if="{{ item.role === 'ai' }}"
+          class="ai-msg"
+          role="assistant"
+          placement="left"
+          chat-id="{{ item.id }}"
+          status="{{ item.status || 'success' }}"
+          animation="{{ item.status === 'pending' ? 'dots' : '' }}"
+          name="{{ item.name }}"
+          datetime="{{ item.datetime }}"
+          show-name
+        >
+          <view slot="avatar">
+            <t-avatar
+              image="{{ aiAvatar || '' }}"
+              icon="user"
+              size="80rpx"
+              shape="circle"
+              data-type="ai"
+              bind:error="onAvatarError"
+            />
+          </view>
+          <view slot="content" class="ai-content-wrapper">
+            <t-chat-content
+              class="ai-content"
+              wx:if="{{ item.content }}"
+              content="{{ { type: 'markdown', data: item.content } }}"
+            />
+          </view>
+        </t-chat-message>
+
+        <t-chat-message
+          wx:else
+          class="user-msg"
+          is-me
+          role="user"
+          placement="right"
+          chat-id="{{ item.id }}"
+          status="{{ item.status || 'success' }}"
+          name="{{ item.name }}"
+          datetime="{{ item.datetime }}"
+          show-name
+        >
+          <view slot="avatar">
+            <t-avatar
+              shape="circle"
+              image="{{ userAvatar || '' }}"
+              icon="user"
+              size="80rpx"
+              data-type="user"
+              bind:error="onAvatarError"
+            />
+          </view>
+          <view slot="content" class="user-content-wrapper">
+            <t-chat-content
+              class="user-content"
+              content="{{ { type: 'markdown', data: item.content } }}"
+              is-me
+            />
+          </view>
+        </t-chat-message>
+      </block>
+    </t-chat-list>
+
+    <t-chat-sender
+      type="input"
+      placeholder="在这里你可以倾诉任何困扰..."
+      value="{{ inputValue }}"
+      loading="{{ isLoading }}"
+      render-presets="{{ [{ name: 'send', type: 'icon' }] }}"
+      auto-rise-with-keyboard
+      bind:change="onInputChange"
+      bind:send="sendMessage"
+      bind:stop="onCancel"
+    />
+  </block>
+
+  <block wx:if="{{ currentView === 'history' }}">
+    <view class="history-container">
+      <view class="history-header">
+        <view class="history-back" bindtap="onHideHistory">
+          <t-icon name="chevron-left" size="48rpx" />
+          <text>返回</text>
+        </view>
+        <text class="history-title">会话历史</text>
+        <view class="history-new-btn" bindtap="onNewSession">
+          <t-icon name="add" size="40rpx" />
+          <text>新会话</text>
+        </view>
+      </view>
+
+      <view class="history-empty" wx:if="{{ sessions.length === 0 }}">
+        <t-icon name="chat" size="96rpx" color="#ccc" />
+        <text class="history-empty-text">暂无会话记录</text>
+      </view>
+
+      <scroll-view class="history-list" scroll-y wx:else>
+        <view
+          class="history-item {{ currentSession.sessionId === item.sessionId ? 'active' : '' }}"
+          wx:for="{{ sessions }}"
+          wx:key="sessionId"
+          data-id="{{ item.sessionId }}"
+          bindtap="onSessionTap"
+        >
+          <view class="history-item-main">
+            <view class="history-item-title">{{ item.title || '新会话' }}</view>
+            <view class="history-item-meta">
+              <text class="history-item-time">{{ item.formattedTime }}</text>
+              <text class="history-item-count">{{ item.messageCount }} 条消息</text>
+            </view>
+            <view class="history-item-preview" wx:if="{{ item.preview }}">
+              {{ item.preview }}
+            </view>
+          </view>
+          <view
+            class="history-item-delete"
+            data-id="{{ item.sessionId }}"
+            catchtap="onSessionDelete"
+          >
+            <t-icon name="delete" size="40rpx" color="#e34d59" />
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <t-dialog
+      visible="{{ showDeleteConfirm }}"
+      title="删除会话"
+      content="确定要删除这条会话记录吗？删除后不可恢复。"
+      confirm-btn="删除"
+      cancel-btn="取消"
+      bind:confirm="onConfirmDelete"
+      bind:cancel="onCancelDelete"
+    />
+  </block>
+</view>

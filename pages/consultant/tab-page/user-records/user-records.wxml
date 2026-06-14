@@ -1,0 +1,115 @@
+<view class="container">
+  <t-navbar title="咨询评估" left-arrow="{{ false }}" placeholder />
+
+  <t-sticky offset-top="{{ navbarHeight }}">
+    <view class="header-section">
+      <t-search
+        placeholder="搜索学生姓名或关键词"
+        bind:change="onSearch"
+        shape="round"
+        class="custom-search"
+      />
+    </view>
+  </t-sticky>
+
+  <view class="skeleton-container" wx:if="{{ isLoading || forceLoading }}">
+    <view class="skeleton-card" wx:for="{{ 4 }}" wx:key="index">
+      <t-skeleton rowCol="{{ rowCol }}" animation="flashing" />
+    </view>
+  </view>
+
+  <list-view
+    wx:if="{{ !isLoading && !forceLoading }}"
+    isRefreshing="{{ isRefreshing }}"
+    isEmpty="{{ records.length === 0 }}"
+    showFooter="{{ records.length > 0 }}"
+    emptyText="暂无评估记录"
+    bind:refresh="onRefresh"
+    minHeight="calc(100vh - 300rpx)"
+  >
+    <view class="records-list">
+      <block wx:for="{{ records }}" wx:key="_id">
+        <view
+          class="record-card"
+          bindtap="viewDetail"
+          data-id="{{ item._id }}"
+          hover-class="card-hover"
+        >
+          <view class="card-header">
+            <view class="student-info">
+              <t-avatar
+                image="{{ item.userAvatar || '' }}"
+                icon="user"
+                size="64rpx"
+                shape="circle"
+                bind:error="onImageError"
+                data-index="{{ index }}"
+              />
+              <text class="student-name">{{
+                item.userName || "匿名学生"
+              }}</text>
+            </view>
+            <t-tag
+              variant="light"
+              theme="{{ item.score >= 60 ? 'success' : 'warning' }}"
+              size="small"
+            >
+              {{ item.score }}分
+            </t-tag>
+          </view>
+          <view class="assessment-content">
+            <view class="assessment-title">{{
+              item.assessmentTitle || "通用咨询评估"
+            }}</view>
+            <view class="feedback-text" wx:if="{{ item.result }}"
+              >建议：{{ item.result }}</view
+            >
+          </view>
+          <view class="card-footer">
+            <text class="date-text">{{ item.dateStr }}</text>
+            <t-icon name="chevron-right" size="32rpx" color="#ccc" />
+          </view>
+        </view>
+      </block>
+    </view>
+  </list-view>
+
+  <t-dialog
+    visible="{{ showDetailDialog }}"
+    title="评估详情"
+    confirm-btn="{{ null }}"
+    cancel-btn="关闭"
+    bind:cancel="closeDetailDialog"
+  >
+    <view slot="content" class="detail-wrapper">
+      <view class="detail-header">
+        <t-avatar
+          image="{{ currentDetail.userAvatar || '' }}"
+          icon="user"
+          size="80rpx"
+          shape="circle"
+        />
+        <view class="detail-title-col">
+          <view class="detail-name">{{ currentDetail.userName }}</view>
+          <view class="detail-date">{{ currentDetail.dateStr }}</view>
+        </view>
+        <view
+          class="detail-score {{ currentDetail.score >= 60 ? 'high' : 'low' }}"
+        >
+          {{ currentDetail.score }}分
+        </view>
+      </view>
+
+      <view class="detail-section">
+        <view class="section-title">评估建议</view>
+        <scroll-view scroll-y class="suggestion-scroll">
+          <view class="suggestion-text">
+            {{ currentDetail.result || "暂无建议内容" }}
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+  </t-dialog>
+
+  <t-toast id="t-toast" />
+</view>

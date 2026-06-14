@@ -1,0 +1,105 @@
+<view class="container">
+  <t-navbar title="知识管理" left-arrow="{{ false }}" placeholder />
+
+  <t-sticky offset-top="{{ stickyProps.offsetTop }}" z-index="100">
+    <view class="search-wrap">
+      <view class="search-bar">
+        <t-search
+          placeholder="搜索文章名称"
+          bind:submit="onSearch"
+          bind:clear="onSearchClear"
+          value="{{ keyword }}"
+          shape="round"
+          t-class-input-container="search-input-container"
+          style="flex: 1"
+        />
+        <t-button
+          theme="primary"
+          shape="circle"
+          icon="add"
+          bind:tap="onAddArticle"
+        />
+      </view>
+    </view>
+  </t-sticky>
+
+  <view class="article-list-container">
+    <list-view
+      isRefreshing="{{ pullDownRefreshing }}"
+      isEmpty="{{ list.length === 0 && !isLoading }}"
+      showFooter="{{ list.length > 0 }}"
+      footerText="{{ hasMore ? '正在加载更多...' : '已经到底了' }}"
+      emptyText="暂无相关文章"
+      bind:refresh="onPullDownRefresh"
+      minHeight="80vh"
+    >
+      <!-- 加载中骨架屏 -->
+      <view wx:if="{{ isLoading || forceLoading }}" class="skeleton-container">
+        <view class="skeleton-card" wx:for="{{ 5 }}" wx:key="index">
+          <view class="info-side">
+            <t-skeleton
+              rowCol="{{ infoSkeleton }}"
+              animation="flashing"
+              rowSpacing="32rpx"
+            />
+          </view>
+          <view class="image-side">
+            <t-skeleton
+              rowCol="{{ imageSkeleton }}"
+              animation="flashing"
+            />
+          </view>
+        </view>
+      </view>
+
+      <view class="article-list" wx:if="{{ list.length > 0 && !isLoading && !forceLoading }}">
+        <t-swipe-cell
+          wx:for="{{ list }}"
+          wx:key="_id"
+          class="article-swipe-item"
+        >
+          <view
+            class="article-card"
+            bind:tap="onArticleTap"
+            data-id="{{ item._id }}"
+          >
+            <view class="article-info">
+              <view class="article-title">{{ item.title }}</view>
+              <view class="article-category-wrap">
+                <text class="article-category">{{ item.category }}</text>
+              </view>
+              <view class="article-meta">
+                <text class="article-date">{{ item.dateFormat }}</text>
+                <view class="article-views">
+                  <t-icon name="browse" size="24rpx" t-class="meta-icon" />
+                  <text>{{ item.views || 0 }}</text>
+                </view>
+              </view>
+            </view>
+            <image
+              wx:if="{{ item.cover }}"
+              class="article-cover"
+              src="{{ item.cover }}"
+              mode="aspectFill"
+            />
+          </view>
+          <view slot="right" class="swipe-right-btns">
+            <view
+              class="btn-delete {{ item.isSystem ? 'btn-disabled' : '' }}"
+              bind:tap="onDeleteTap"
+              data-id="{{ item._id }}"
+              data-title="{{ item.title }}"
+              data-is-system="{{ item.isSystem }}"
+            >
+              删除
+            </view>
+          </view>
+        </t-swipe-cell>
+      </view>
+
+    </list-view>
+  </view>
+</view>
+
+<t-toast id="t-toast" />
+<t-dialog id="t-dialog" />

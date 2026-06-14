@@ -1,0 +1,5 @@
+<view class="container">
+  <t-navbar title="测评记录" left-arrow bind:go-back="onBack" placeholder />
+  <assessment-record-list role="user" navbarHeight="{{ navbarHeight }}" />
+</view>
+<t-toast id="t-toast" />

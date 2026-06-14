@@ -1,0 +1,341 @@
+<view class="container">
+  <t-navbar title="用户管理" left-arrow="{{ false }}" placeholder />
+
+  <t-sticky offset-top="{{ stickyProps.offsetTop }}" z-index="100">
+    <view class="search-wrap">
+      <t-search
+        placeholder="搜索昵称"
+        bind:submit="onSearch"
+        bind:clear="onSearchClear"
+        value="{{ keyword }}"
+        shape="round"
+        t-class-input-container="search-input-container"
+      />
+    </view>
+  </t-sticky>
+
+  <t-tabs
+    value="{{ currentTab }}"
+    bind:change="onTabChange"
+    theme="card"
+    space-evenly="{{ false }}"
+    sticky="{{ true }}"
+    offset-top="{{ stickyProps.tabsOffsetTop }}"
+  >
+    <t-tab-panel label="学生用户" value="user">
+      <view class="tab-content" wx:if="{{ currentTab === 'user' }}">
+        <list-view
+          isRefreshing="{{ pullDownRefreshing }}"
+          bind:refresh="onPullDownRefresh"
+          isEmpty="{{ list.length === 0 && !isLoading }}"
+          showFooter="{{ !hasMore && list.length > 0 }}"
+          emptyText="暂无用户数据"
+        >
+          <view
+            wx:if="{{ isLoading && list.length == 0 }}"
+            class="skeleton-list"
+          >
+            <view
+              class="skeleton-item"
+              wx:for="{{ [1, 2, 3, 4, 5, 6] }}"
+              wx:key="*this"
+            >
+              <t-skeleton
+                row-col="{{ skeletonAvatar }}"
+                animation="gradient"
+                class="skeleton-avatar"
+              ></t-skeleton>
+              <view class="skeleton-content">
+                <t-skeleton
+                  animation="gradient"
+                  row-col="{{ skeletonText }}"
+                ></t-skeleton>
+              </view>
+            </view>
+          </view>
+          <view class="user-list" wx:else>
+            <t-swipe-cell
+              class="user-swipe-item"
+              wx:for="{{ list }}"
+              wx:key="_id"
+            >
+              <view slot="right" class="btn-wrapper">
+                <view
+                  class="btn btn-view"
+                  bind:tap="onViewTap"
+                  data-item="{{ item }}"
+                  >查看</view
+                >
+                <view
+                  class="btn btn-edit {{ item.isSystem ? 'btn-disabled' : '' }}"
+                  bind:tap="onEditTap"
+                  data-item="{{ item }}"
+                  >编辑</view
+                >
+                <view
+                  class="btn btn-delete {{
+                    item.isSystem ? 'btn-disabled' : ''
+                  }}"
+                  bind:tap="onDeleteTap"
+                  data-item="{{ item }}"
+                  >删除</view
+                >
+              </view>
+              <t-cell bordered="{{ false }}">
+                <view slot="left-icon" class="cell-avatar">
+                  <t-avatar
+                    image="{{ item.avatar || '' }}"
+                    size="100rpx"
+                    shape="circle"
+                    icon="user"
+                    bind:error="onAvatarError"
+                    data-index="{{ index }}"
+                  />
+                </view>
+                <view slot="title" class="cell-title">
+                  <text>{{ item.name }}</text>
+                  <t-tag
+                    variant="light"
+                    theme="success"
+                    size="small"
+                    t-class="user-role-tag"
+                    >学生</t-tag
+                  >
+                </view>
+                <view slot="description" class="cell-desc">
+                  <view>注册时间：{{ item.createTimeFormat }}</view>
+                </view>
+              </t-cell>
+            </t-swipe-cell>
+          </view>
+        </list-view>
+      </view>
+    </t-tab-panel>
+
+    <t-tab-panel label="咨询师" value="consultant">
+      <view class="tab-content" wx:if="{{ currentTab === 'consultant' }}">
+        <list-view
+          isRefreshing="{{ pullDownRefreshing }}"
+          bind:refresh="onPullDownRefresh"
+          isEmpty="{{ list.length === 0 && !isLoading }}"
+          showFooter="{{ !hasMore && list.length > 0 }}"
+          emptyText="暂无咨询师数据"
+        >
+          <view
+            wx:if="{{ isLoading && list.length === 0 }}"
+            class="skeleton-list"
+          >
+            <view
+              class="skeleton-item"
+              wx:for="{{ [1, 2, 3, 4, 5, 6] }}"
+              wx:key="*this"
+            >
+              <t-skeleton
+                row-col="{{ skeletonAvatar }}"
+                animation="gradient"
+                class="skeleton-avatar"
+              ></t-skeleton>
+              <view class="skeleton-content">
+                <t-skeleton
+                  animation="gradient"
+                  row-col="{{ skeletonText }}"
+                ></t-skeleton>
+              </view>
+            </view>
+          </view>
+          <view class="user-list" wx:else>
+            <t-swipe-cell
+              class="user-swipe-item"
+              wx:for="{{ list }}"
+              wx:key="_id"
+            >
+              <view slot="right" class="btn-wrapper">
+                <view
+                  class="btn btn-view"
+                  bind:tap="onViewTap"
+                  data-item="{{ item }}"
+                  >查看</view
+                >
+                <view
+                  class="btn btn-edit {{ item.isSystem ? 'btn-disabled' : '' }}"
+                  bind:tap="onEditTap"
+                  data-item="{{ item }}"
+                  >编辑</view
+                >
+                <view
+                  class="btn btn-delete {{
+                    item.isSystem ? 'btn-disabled' : ''
+                  }}"
+                  bind:tap="onDeleteTap"
+                  data-item="{{ item }}"
+                  >{{ item.isSystem ? "锁定" : "删除" }}</view
+                >
+              </view>
+              <t-cell
+                bordered="{{ false }}"
+                t-class-description="t-cell-desc-container"
+              >
+                <view slot="left-icon" class="cell-avatar">
+                  <t-avatar
+                    image="{{ item.avatar || '' }}"
+                    size="100rpx"
+                    shape="circle"
+                    icon="user"
+                    bind:error="onAvatarError"
+                    data-index="{{ index }}"
+                  />
+                </view>
+                <view slot="title" class="cell-title">
+                  <text>{{ item.name }}</text>
+                  <t-tag
+                    variant="light"
+                    theme="primary"
+                    size="small"
+                    t-class="user-role-tag"
+                    >咨询师</t-tag
+                  >
+                  <t-tag
+                    variant="light"
+                    theme="warning"
+                    size="small"
+                    t-class="title-tag"
+                    >{{ item.title || "暂无头衔" }}</t-tag
+                  >
+                </view>
+                <view slot="description" class="cell-desc">
+                  <view>注册时间：{{ item.createTimeFormat }}</view>
+                  <view class="expertise-row" wx:if="{{ item.expertise }}">
+                    <text class="expertise-text"
+                      >擅长：{{ item.expertise }}</text
+                    >
+                  </view>
+                </view>
+              </t-cell>
+            </t-swipe-cell>
+          </view>
+        </list-view>
+      </view>
+    </t-tab-panel>
+  </t-tabs>
+</view>
+
+<t-dialog id="t-dialog" />
+<t-toast id="t-toast" />
+
+<t-dialog
+  visible="{{ userInfoVisible }}"
+  confirm-btn="关闭"
+  bind:confirm="onCloseUserDialog"
+  t-class-content="dialog-content"
+>
+  <scroll-view
+    slot="content"
+    class="premium-detail-container"
+    scroll-y
+    enhanced="{{ true }}"
+    show-scrollbar="{{ false }}"
+  >
+    <!-- Header Section -->
+    <view class="dialog-profile-header">
+      <t-avatar
+        image="{{ userDetail.avatar || '' }}"
+        size="large"
+        shape="circle"
+        icon="user"
+        t-class-image="dialog-avatar"
+        bind:error="onDialogAvatarError"
+      />
+      <view class="header-info">
+        <text class="header-name">{{ userDetail.name || "微信用户" }}</text>
+        <view class="badge-row">
+          <t-tag
+            variant="light"
+            size="small"
+            theme="{{ currentTab === 'user' ? 'success' : 'primary' }}"
+            t-class="role-badge"
+            >{{ currentTab === "user" ? "学生" : "咨询师" }}</t-tag
+          >
+          <t-tag
+            wx:if="{{ currentTab === 'consultant' && userDetail.title }}"
+            variant="light"
+            size="small"
+            theme="warning"
+            t-class="role-badge"
+            >{{ userDetail.title }}</t-tag
+          >
+        </view>
+      </view>
+    </view>
+
+    <!-- Stats Section -->
+    <view class="stats-grid">
+      <view class="stat-card stat-blue">
+        <text class="stat-value">{{ userDetail.consultationCount || 0 }}</text>
+        <text class="stat-label">{{
+          currentTab === "user" ? "累计咨询" : "咨询人次"
+        }}</text>
+      </view>
+      <view class="stat-card stat-orange">
+        <text class="stat-value">{{
+          currentTab === "user" ? "LV.1" : "4.9分"
+        }}</text>
+        <text class="stat-label">{{
+          currentTab === "user" ? "活跃等级" : "综合评分"
+        }}</text>
+      </view>
+    </view>
+
+    <!-- Details Section -->
+    <view class="details-list">
+      <view
+        class="detail-item"
+        wx:if="{{ currentTab === 'consultant' && userDetail.expertise }}"
+      >
+        <t-icon name="chart-bubble" size="32rpx" color="#999" />
+        <text class="item-label">擅长领域</text>
+        <text class="item-value">{{ userDetail.expertise }}</text>
+      </view>
+
+      <view class="detail-item" wx:if="{{ userDetail.createTimeFormatted }}">
+        <t-icon name="calendar" size="32rpx" color="#999" />
+        <text class="item-label">注册于</text>
+        <text class="item-value">{{ userDetail.createTimeFormatted }}</text>
+      </view>
+
+      <!-- Introduction for Consultant -->
+      <view
+        class="detail-item detail-item-column"
+        wx:if="{{ currentTab === 'consultant' && userDetail.introduction }}"
+      >
+        <view class="item-header">
+          <view class="item-header-left">
+            <t-icon name="info-circle" size="32rpx" color="#999" />
+            <text class="item-label">个人简介</text>
+          </view>
+        </view>
+        <view class="intro-box">
+          <text class="intro-text">{{ userDetail.introduction }}</text>
+        </view>
+      </view>
+
+      <view class="detail-item detail-item-column id-section">
+        <view class="item-header">
+          <view class="item-header-left">
+            <t-icon name="user-circle" size="32rpx" color="#999" />
+            <text class="item-label">用户标识 ID</text>
+          </view>
+          <t-icon
+            name="copy"
+            size="32rpx"
+            color="#0052d9"
+            class="copy-icon"
+            bindtap="onCopyID"
+          />
+        </view>
+        <view class="id-wrapper">
+          <text class="mini-id">{{ userDetail._id }}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</t-dialog>

@@ -1,0 +1,211 @@
+<view class="container">
+  <t-navbar title="轮播图管理" left-arrow="{{ false }}" placeholder />
+
+  <view class="banner-header">
+    <t-search
+      placeholder="搜索轮播标题"
+      value="{{ keyword }}"
+      bind:change="onSearch"
+      class="search-bar"
+      shape="round"
+    />
+    <t-button theme="primary" icon="add" shape="circle" bindtap="handleAdd" />
+  </view>
+
+  <list-view
+    isRefreshing="{{ isRefreshing }}"
+    isEmpty="{{ banners.length === 0 && !isLoading }}"
+    showFooter="{{ banners.length > 0 && !isLoading }}"
+    footerText="已经到底了"
+    minHeight="calc(100vh - 400rpx)"
+    bind:refresh="onRefresh"
+  >
+    <!-- Skeleton Screen -->
+    <view wx:if="{{ isLoading }}" class="skeleton-wrap">
+      <view
+        class="banner-item skeleton-card-wrap"
+        wx:for="{{ 2 }}"
+        wx:key="index"
+      >
+        <view class="skeleton-image-bg pulse"></view>
+        <view class="banner-info">
+          <view class="skeleton-line title pulse"></view>
+          <view class="skeleton-line content pulse"></view>
+          <view class="skeleton-line content short pulse"></view>
+          <view class="banner-meta">
+            <view class="skeleton-line meta pulse"></view>
+            <view class="skeleton-line meta pulse"></view>
+          </view>
+        </view>
+        <view class="banner-actions">
+          <view
+            class="skeleton-circle pulse"
+            wx:for="{{ 3 }}"
+            wx:key="*this"
+          ></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Banner List -->
+    <view class="banner-list" wx:if="{{ !isLoading }}">
+      <view class="banner-item" wx:for="{{ banners }}" wx:key="_id">
+        <t-image
+          src="{{ item.imageUrl }}"
+          mode="aspectFill"
+          t-class="banner-img"
+        />
+        <view class="banner-info">
+          <view class="banner-title-row">
+            <text class="banner-title">{{ item.title }}</text>
+          </view>
+          <text class="banner-content-preview">{{
+            item.content || "暂无资讯内容"
+          }}</text>
+          <view class="banner-meta">
+            <text class="status-indicator"
+              >排序：{{
+                item.order || item.order === 0 ? item.order : "未排序"
+              }}</text
+            >
+            <text
+              class="status-indicator {{ item.isActive ? 'active' : '' }}"
+              >{{ item.isActive ? "● 已启用" : "○ 已隐藏" }}</text
+            >
+          </view>
+        </view>
+        <view class="banner-actions">
+          <t-button
+            variant="text"
+            theme="{{ item.isActive ? 'default' : 'primary' }}"
+            icon="{{ item.isActive ? 'browse-off' : 'browse' }}"
+            bindtap="handleToggleStatus"
+            data-banner="{{ item }}"
+            t-class="banner-action-btn action-btn-status {{
+              item.isSystem ? 'btn-disabled' : ''
+            }}"
+          />
+          <t-button
+            variant="text"
+            theme="primary"
+            icon="edit"
+            bindtap="handleEdit"
+            data-banner="{{ item }}"
+            t-class="banner-action-btn {{
+              item.isSystem ? 'btn-disabled' : ''
+            }}"
+          />
+          <t-button
+            variant="text"
+            theme="danger"
+            icon="delete"
+            bindtap="handleDelete"
+            data-id="{{ item._id }}"
+            data-is-system="{{ item.isSystem }}"
+            t-class="banner-action-btn {{
+              item.isSystem ? 'btn-disabled' : ''
+            }}"
+          />
+        </view>
+      </view>
+    </view>
+  </list-view>
+
+  <!-- Edit Popup -->
+  <t-popup
+    visible="{{ showEditPopup }}"
+    placement="bottom"
+    using-custom-navbar
+    bind:visible-change="closePopup"
+  >
+    <view class="popup-content">
+      <view class="popup-header">
+        <text class="popup-title">{{
+          isEditing ? "编辑轮播图" : "新增轮播图"
+        }}</text>
+        <t-icon name="close" size="40rpx" color="#999" bindtap="closePopup" />
+      </view>
+
+      <scroll-view scroll-y class="form-scroll">
+        <view class="form-section-title">素材配置</view>
+        <view class="form-item">
+          <view class="title-label required">轮播图片</view>
+          <t-upload
+            media-type="{{ ['image'] }}"
+            files="{{ fileList }}"
+            gridConfig="{{ gridConfig }}"
+            max="{{ 1 }}"
+            bind:add="onAddFile"
+            bind:remove="onRemoveFile"
+            t-class="form-upload-class"
+            t-class-grid="form-upload-grid"
+          />
+        </view>
+
+        <view class="form-section-title">基础配置</view>
+        <view class="form-item">
+          <view class="title-label required">轮播标题</view>
+          <t-input
+            placeholder="请输入标题 (最多12字)"
+            value="{{ currentBanner.title }}"
+            bind:change="onInputChange"
+            data-field="title"
+            maxlength="{{ 12 }}"
+            suffix="{{ (currentBanner.title.length || 0) + '/12' }}"
+            t-class="form-field-class"
+            t-class-suffix="form-title-suffix"
+          />
+        </view>
+
+        <view class="form-item row">
+          <view class="title-label required">排序权重</view>
+          <t-stepper
+            value="{{ currentBanner.order }}"
+            bind:change="onInputChange"
+            data-field="order"
+            theme="filled"
+            t-class="form-stepper-class"
+          />
+        </view>
+
+        <view class="form-item row">
+          <view class="title-label">显示状态</view>
+          <t-switch
+            value="{{ currentBanner.isActive }}"
+            bind:change="onSwitchChange"
+          />
+        </view>
+
+        <view class="form-section-title">资讯摘要</view>
+        <view class="form-item">
+          <view class="title-label required">弹窗简介</view>
+          <t-textarea
+            placeholder="点击轮播后显示的简短介绍 (最多30字)"
+            value="{{ currentBanner.content }}"
+            bind:change="onInputChange"
+            data-field="content"
+            bordered="{{ false }}"
+            maxlength="{{ 30 }}"
+            indicator
+            t-class="form-field-class"
+          />
+        </view>
+      </scroll-view>
+
+      <view class="form-actions">
+        <t-button
+          block
+          theme="primary"
+          size="large"
+          shape="round"
+          t-class="btn-submit"
+          bindtap="handleSubmit"
+          disabled="{{ !isFormValid }}"
+          >保存设置</t-button
+        >
+      </view>
+    </view>
+  </t-popup>
+</view>
+
+<t-toast id="t-toast" />

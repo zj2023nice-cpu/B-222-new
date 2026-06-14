@@ -1,0 +1,12 @@
+<t-navbar title="编辑用户资料" left-arrow bind:go-back="onBack" placeholder />
+<view class="container">
+  <user-profile-form
+    initialData="{{ userInfo }}"
+    userRole="{{ userRole }}"
+    submitText="确认修改 (管理员)"
+    isSaving="{{ isSaving }}"
+    bind:save="handleAdminSave"
+  />
+
+  <t-toast id="t-toast" />
+</view>

@@ -1,0 +1,11 @@
+<t-navbar title="编辑个人资料" left-arrow placeholder />
+<view class="container">
+  <user-profile-form
+    initialData="{{ userInfo }}"
+    userRole="consultant"
+    submitText="更新个人资料"
+    isSaving="{{ isSaving }}"
+    bind:save="onSaveProfile"
+  />
+</view>
+<t-toast id="t-toast" />

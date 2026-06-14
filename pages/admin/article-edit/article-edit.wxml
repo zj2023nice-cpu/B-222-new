@@ -1,0 +1,137 @@
+<view class="container">
+  <t-navbar
+    title="{{ isEdit ? '编辑文章' : '发布新文章' }}"
+    left-arrow
+    bind:go-back="onBack"
+    placeholder
+  />
+
+  <view class="form-container">
+    <!-- Cover Upload -->
+    <view class="cover-section">
+      <view class="title-label required">文章封面</view>
+      <view class="cover-upload-box" bind:tap="onUploadCover">
+        <image
+          wx:if="{{ article.cover }}"
+          src="{{ article.cover }}"
+          mode="aspectFill"
+          class="cover-preview"
+          bindload="onImageLoad"
+        />
+        <!-- Loading State -->
+        <view
+          wx:if="{{ article.cover && !isImageLoaded }}"
+          class="image-loading"
+        >
+          <t-loading theme="dots" size="60rpx" inheritColor />
+        </view>
+
+        <view wx:if="{{ !article.cover }}" class="upload-placeholder">
+          <view class="upload-icon">
+            <t-icon name="add" size="48rpx" />
+          </view>
+          <text class="upload-text">点击上传封面图</text>
+        </view>
+        <view wx:if="{{ article.cover }}" class="re-upload-tag">更换图片</view>
+      </view>
+    </view>
+
+    <!-- Base Info -->
+    <!-- Base Info -->
+    <view class="title-label">基础信息</view>
+    <view class="form-section">
+      <t-input
+        t-class="title-input"
+        t-class-input="input-class"
+        placeholder="请输入标题"
+        value="{{ article.title }}"
+        layout="horizontal"
+        label-width="160rpx"
+        bind:change="onInputChange"
+        data-field="title"
+        maxlength="{{ 15 }}"
+        suffix="{{ article.title.length || 0 }}/15"
+      >
+        <view slot="label" class="title-label required no-margin">文章标题</view>
+      </t-input>
+
+      <t-cell
+        t-class="category-cell"
+        arrow
+        hover
+        note="{{ article.category || '请选择分类' }}"
+        bind:click="onShowPicker"
+        title-width="160rpx"
+        align="center"
+      >
+        <view slot="title" class="title-label required no-margin">文章分类</view>
+      </t-cell>
+
+      <view class="title-label">内容摘要</view>
+      <t-textarea
+        t-class-textarea="textarea-class"
+        placeholder="简要概括文章内容（可选）"
+        value="{{ article.desc }}"
+        bind:change="onInputChange"
+        data-field="desc"
+        maxlength="{{ 100 }}"
+        indicator
+        bordered
+      />
+    </view>
+
+    <!-- Main Content -->
+    <view class="title-label required">文章详情</view>
+    <view class="form-section">
+      <t-textarea
+        t-class="content-textarea"
+        t-class-textarea="textarea-class"
+        placeholder="在这里输入文章的正文内容..."
+        value="{{ article.content }}"
+        bind:change="onInputChange"
+        data-field="content"
+        maxlength="{{ 2000 }}"
+        autosize="{{ { minRows: 10, maxRows: 20 } }}"
+        bordered
+        indicator
+      />
+    </view>
+  </view>
+
+  <!-- Bottom CTA -->
+  <view class="footer-bar">
+    <t-button
+      theme="primary"
+      block
+      size="large"
+      shape="round"
+      bind:tap="onSave"
+      loading="{{ isSaving }}"
+      disabled="{{ !isFormValid || article.isSystem }}"
+    >
+      {{
+        article.isSystem
+          ? "系统文章暂无权限编辑"
+          : isEdit
+            ? "保存修改"
+            : "立即发布"
+      }}
+    </t-button>
+  </view>
+</view>
+
+<!-- Category Picker -->
+<t-picker
+  visible="{{ pickerVisible }}"
+  value="{{ [article.category] }}"
+  data-key="category"
+  title="选择文章分类"
+  cancelBtn="取消"
+  confirmBtn="确认"
+  bindconfirm="onPickerConfirm"
+  bindcancel="onHidePicker"
+>
+  <t-picker-item options="{{ categories }}" />
+</t-picker>
+
+<t-toast id="t-toast" />

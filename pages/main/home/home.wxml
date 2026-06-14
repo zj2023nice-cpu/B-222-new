@@ -1,0 +1,228 @@
+<view class="container">
+  <t-navbar title="{{ pageTitle }}" left-arrow="{{ false }}" placeholder />
+
+  <view wx:if="{{ isLoading }}" class="loading-container">
+    <t-loading theme="circular" size="80rpx" text="加载中..." layout="vertical" />
+  </view>
+
+  <list-view
+    wx:else
+    isRefreshing="{{ isRefreshing }}"
+    bind:refresh="onRefresh"
+    showFooter="{{ true }}"
+    footerText="守护心理健康"
+    minHeight="calc(100vh - 100rpx)"
+  >
+
+    <!-- ==================== USER 角色 ==================== -->
+    <block wx:if="{{ role === 'user' }}">
+
+      <!-- 最近预约 -->
+      <view class="section-title">
+        <view class="title-main">
+          <t-icon name="calendar" size="42rpx" color="#0052d9" class="title-icon" />
+          <text>最近预约</text>
+        </view>
+        <text class="section-link" bindtap="navToAppointmentList">查看全部</text>
+      </view>
+
+      <view wx:if="{{ recentAppointments.length > 0 }}" class="todo-list">
+        <view class="todo-card" wx:for="{{ recentAppointments }}" wx:key="_id">
+          <view class="todo-card-left">
+            <view class="todo-card-row">
+              <t-icon name="user-talk" size="28rpx" color="#666" />
+              <text class="todo-card-name">{{ item.consultantName || '咨询师' }}</text>
+              <t-tag
+                theme="{{ statusMap[item.status] ? statusMap[item.status].theme : 'default' }}"
+                variant="light"
+                size="small"
+                shape="round"
+              >
+                {{ statusMap[item.status] ? statusMap[item.status].label : item.status }}
+              </t-tag>
+            </view>
+            <view class="todo-card-row sub">
+              <t-icon name="time" size="24rpx" color="#999" />
+              <text>{{ item.dateStr }} {{ item.time }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view wx:else class="empty-section">
+        <text class="empty-text">暂无预约记录</text>
+        <t-button theme="primary" size="small" shape="round" bindtap="navToBookAppointment">去预约</t-button>
+      </view>
+
+      <!-- 待做测评 -->
+      <view class="section-title">
+        <view class="title-main">
+          <t-icon name="assignment" size="42rpx" color="#0052d9" class="title-icon" />
+          <text>待做测评</text>
+        </view>
+        <text class="section-link" bindtap="navToAssessment">测评中心</text>
+      </view>
+
+      <view wx:if="{{ availableAssessments.length > 0 }}" class="assessment-grid">
+        <view class="assessment-card" wx:for="{{ availableAssessments }}" wx:key="_id" bindtap="navToAssessment">
+          <view class="assessment-icon-wrap">
+            <t-icon name="assignment" size="40rpx" color="#0052d9" />
+          </view>
+          <view class="assessment-info">
+            <text class="assessment-name">{{ item.name || item.title }}</text>
+            <text class="assessment-desc">{{ item.description || '专业心理测评量表' }}</text>
+          </view>
+        </view>
+      </view>
+      <view wx:else class="empty-section">
+        <text class="empty-text">暂无可用测评</text>
+      </view>
+
+      <!-- 快捷入口 -->
+      <view class="section-title">
+        <view class="title-main">
+          <t-icon name="dashboard" size="42rpx" color="#7c4dff" class="title-icon" />
+          <text>快捷入口</text>
+        </view>
+      </view>
+
+      <view class="quick-entries">
+        <view
+          class="quick-entry-card"
+          wx:for="{{ quickEntries }}"
+          wx:key="key"
+          bindtap="onQuickEntryTap"
+          data-url="{{ item.url }}"
+          style="background: {{ item.gradient }}"
+        >
+          <view class="quick-entry-info">
+            <text class="quick-entry-label">{{ item.label }}</text>
+            <text class="quick-entry-desc">{{ item.desc }}</text>
+          </view>
+          <t-icon name="{{ item.icon }}" size="48rpx" color="{{ item.color }}" />
+        </view>
+      </view>
+
+    </block>
+
+    <!-- ==================== CONSULTANT 角色 ==================== -->
+    <block wx:elif="{{ role === 'consultant' }}">
+
+      <!-- 待办统计 -->
+      <view class="section-title">
+        <view class="title-main">
+          <t-icon name="dashboard" size="42rpx" color="#0052d9" class="title-icon" />
+          <text>预约概览</text>
+        </view>
+      </view>
+
+      <view class="stats-grid">
+        <view class="stats-card highlight">
+          <text class="stats-value">{{ consultantStats.pending || 0 }}</text>
+          <text class="stats-label">待处理</text>
+        </view>
+        <view class="stats-card">
+          <text class="stats-value">{{ consultantStats.confirmed || 0 }}</text>
+          <text class="stats-label">待咨询</text>
+        </view>
+        <view class="stats-card">
+          <text class="stats-value">{{ consultantStats.completed || 0 }}</text>
+          <text class="stats-label">已完成</text>
+        </view>
+      </view>
+
+      <!-- 待处理预约列表 -->
+      <view class="section-title">
+        <view class="title-main">
+          <t-icon name="calendar" size="42rpx" color="#ed7b2f" class="title-icon" />
+          <text>待处理预约</text>
+        </view>
+        <text class="section-link" bindtap="navToConsultantAppointments">全部预约</text>
+      </view>
+
+      <view wx:if="{{ consultantPendingList.length > 0 }}" class="todo-list">
+        <view class="todo-card" wx:for="{{ consultantPendingList }}" wx:key="_id">
+          <view class="todo-card-left">
+            <view class="todo-card-row">
+              <t-icon name="user" size="28rpx" color="#666" />
+              <text class="todo-card-name">{{ item.studentName || '学生' }}</text>
+              <t-tag theme="warning" variant="light" size="small" shape="round">待处理</t-tag>
+            </view>
+            <view class="todo-card-row sub">
+              <t-icon name="time" size="24rpx" color="#999" />
+              <text>{{ item.dateStr }} {{ item.time }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view wx:else class="empty-section">
+        <text class="empty-text">暂无待处理预约</text>
+      </view>
+
+    </block>
+
+    <!-- ==================== ADMIN 角色 ==================== -->
+    <block wx:elif="{{ role === 'admin' }}">
+
+      <!-- 管理统计 -->
+      <view class="section-title">
+        <view class="title-main">
+          <t-icon name="dashboard" size="42rpx" color="#0052d9" class="title-icon" />
+          <text>咨询管理概览</text>
+        </view>
+      </view>
+
+      <view class="stats-grid">
+        <view class="stats-card highlight">
+          <text class="stats-value">{{ adminStats.pending || 0 }}</text>
+          <text class="stats-label">待处理</text>
+        </view>
+        <view class="stats-card">
+          <text class="stats-value">{{ adminStats.confirmed || 0 }}</text>
+          <text class="stats-label">待咨询</text>
+        </view>
+        <view class="stats-card">
+          <text class="stats-value">{{ adminStats.completed || 0 }}</text>
+          <text class="stats-label">已完成</text>
+        </view>
+        <view class="stats-card">
+          <text class="stats-value">{{ adminStats.total || 0 }}</text>
+          <text class="stats-label">累计预约</text>
+        </view>
+      </view>
+
+      <!-- 待处理预约 -->
+      <view class="section-title">
+        <view class="title-main">
+          <t-icon name="calendar" size="42rpx" color="#ed7b2f" class="title-icon" />
+          <text>待处理预约</text>
+        </view>
+        <text class="section-link" bindtap="navToAdminConsultation">咨询管理</text>
+      </view>
+
+      <view wx:if="{{ adminPendingList.length > 0 }}" class="todo-list">
+        <view class="todo-card" wx:for="{{ adminPendingList }}" wx:key="_id">
+          <view class="todo-card-left">
+            <view class="todo-card-row">
+              <t-icon name="user" size="28rpx" color="#666" />
+              <text class="todo-card-name">{{ item.studentName || '学生' }}</text>
+              <t-icon name="chat" size="24rpx" color="#cbd5e1" style="margin: 0 8rpx;" />
+              <t-icon name="user-talk" size="28rpx" color="#666" />
+              <text class="todo-card-name" style="margin-left: 4rpx;">{{ item.consultantName || '咨询师' }}</text>
+            </view>
+            <view class="todo-card-row sub">
+              <t-icon name="time" size="24rpx" color="#999" />
+              <text>{{ item.dateStr }} {{ item.time }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view wx:else class="empty-section">
+        <text class="empty-text">暂无待处理预约</text>
+      </view>
+
+    </block>
+
+  </list-view>
+</view>
+
+<t-toast id="t-toast" />

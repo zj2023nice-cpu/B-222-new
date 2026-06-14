@@ -1,0 +1,13 @@
+{
+  "component": true,
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-skeleton": "tdesign-miniprogram/skeleton/skeleton",
+    "t-swiper": "tdesign-miniprogram/swiper/swiper",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "article-card": "/components/article-card/article-card",
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "list-view": "/components/list-view/list-view"
+  }
+}

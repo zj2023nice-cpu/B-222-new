@@ -1,0 +1,353 @@
+<view class="container">
+  <t-navbar title="预约咨询" left-arrow placeholder />
+  <t-sticky offset-top="{{ navbarHeight }}">
+    <view class="search-wrap">
+      <t-search
+        value="{{ keyword }}"
+        placeholder="搜索专家姓名、专业领域或介绍"
+        shape="round"
+        bind:change="onSearch"
+        bind:clear="onSearchClear"
+        bind:submit="onSearch"
+      />
+    </view>
+  </t-sticky>
+
+  <view wx:if="{{ isLoading }}" class="skeleton-container">
+    <view wx:for="{{ 3 }}" wx:key="index" class="skeleton-card">
+      <t-skeleton rowCol="{{ avatarSkeleton }}" animation="flashing" />
+      <view style="flex: 1; margin-left: 24rpx">
+        <t-skeleton rowCol="{{ infoSkeleton }}" animation="flashing" />
+      </view>
+    </view>
+  </view>
+
+  <list-view
+    wx:if="{{ !isLoading }}"
+    isRefreshing="{{ isRefreshing }}"
+    isEmpty="{{ consultants.length === 0 }}"
+    showFooter="{{ consultants.length > 0 }}"
+    emptyText="{{ keyword ? '未搜索到相关专家' : '暂无专家排班' }}"
+    footerText="已加载全部专家"
+    bind:refresh="onPullDownRefresh"
+    minHeight="calc(100vh - {{ navbarHeight }}px - 108rpx)"
+    customStyle="flex: 1"
+  >
+    <view class="consultant-list">
+      <view class="consultant-card" wx:for="{{ consultants }}" wx:key="_id" bindtap="onCardTap" data-index="{{ index }}">
+        <t-avatar
+          image="{{ item.avatar || '' }}"
+          icon="user"
+          shape="circle"
+          size="120rpx"
+          class="avatar"
+          bind:error="onAvatarError"
+          data-index="{{ index }}"
+        />
+
+        <view class="content">
+          <view class="name-row">
+            <view class="name-left">
+              <text class="name">{{ item.name }}</text>
+              <t-tag theme="primary" variant="light" size="small" shape="round">
+                <t-icon
+                  name="user"
+                  size="20rpx"
+                  slot="prefix-icon"
+                  t-class="expert-tag-icon"
+                />
+                {{ item.title }}
+              </t-tag>
+            </view>
+
+            <view class="btn-group">
+              <t-tag
+                wx:if="{{ item.hasWaitlist }}"
+                theme="warning"
+                variant="light"
+                size="small"
+                shape="round"
+                class="waitlist-tag"
+              >
+                候补中
+              </t-tag>
+              <t-button
+                theme="{{ item.isBooked ? 'success' : 'primary' }}"
+                size="extra-small"
+                shape="round"
+                variant="{{ item.isBooked ? 'light' : 'base' }}"
+                catchtap="book"
+                data-index="{{ index }}"
+                class="book-btn-mini"
+              >
+                {{ item.isBooked ? "已预约" : "预约" }}
+              </t-button>
+            </view>
+          </view>
+
+          <view class="rating">
+            <t-rate value="{{ item.score || 5 }}" size="24rpx" disabled />
+            <text class="score">{{ item.score || 5.0 }}</text>
+          </view>
+
+          <view class="expert">擅长：{{ item.expertise }}</view>
+          <view class="intro">{{ item.introduction }}</view>
+        </view>
+      </view>
+    </view>
+  </list-view>
+</view>
+
+<t-popup
+  visible="{{ showDetailPanel }}"
+  placement="right"
+  bind:visible-change="onCloseDetailPanel"
+>
+  <view class="detail-panel">
+    <view class="detail-header">
+      <view class="detail-header-info">
+        <t-avatar
+          image="{{ detailConsultant.avatar || '' }}"
+          icon="user"
+          shape="circle"
+          size="96rpx"
+        />
+        <view class="detail-header-text">
+          <text class="detail-name">{{ detailConsultant.name || '未知' }}</text>
+          <text class="detail-title">{{ detailConsultant.title || '' }}</text>
+        </view>
+      </view>
+      <t-icon name="close" size="40rpx" color="#999" bindtap="onCloseDetailPanel" />
+    </view>
+
+    <scroll-view scroll-y class="detail-body">
+      <view class="detail-section" wx:if="{{ detailConsultant.expertise }}">
+        <view class="detail-section-title">擅长方向</view>
+        <view class="detail-expertise">{{ detailConsultant.expertise }}</view>
+      </view>
+
+      <view class="detail-section" wx:if="{{ detailConsultant.introduction }}">
+        <view class="detail-section-title">个人简介</view>
+        <view class="detail-intro">{{ detailConsultant.introduction }}</view>
+      </view>
+
+      <view class="detail-section" wx:if="{{ detailConsultant._availableSummary && detailConsultant._availableSummary.length > 0 }}">
+        <view class="detail-section-title">可预约日期</view>
+        <view class="detail-dates">
+          <view
+            class="detail-date-item {{ item.isFull ? 'full' : 'available' }}"
+            wx:for="{{ detailConsultant._availableSummary }}"
+            wx:key="dateStr"
+          >
+            <text class="detail-date-str">{{ item.dateStr }}</text>
+            <text class="detail-date-status" wx:if="{{ item.isFull }}">已约满</text>
+            <text class="detail-date-status available" wx:else>余{{ item.availableSlots }}位</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="detail-full-notice" wx:if="{{ detailConsultant._allFull }}">
+        <t-icon name="info-circle" size="28rpx" color="#ed7b2f" />
+        <text>该咨询师近期已全部约满，可登记候补等待空位</text>
+      </view>
+    </scroll-view>
+  </view>
+</t-popup>
+
+<t-popup
+  visible="{{ showSchedulePopup }}"
+  placement="bottom"
+  bind:visible-change="onClosePopup"
+>
+  <view class="popup-content">
+    <view class="popup-header">
+      <text class="popup-title">选择预约时间</text>
+      <t-icon name="close" size="40rpx" color="#999" bindtap="onClosePopup" />
+    </view>
+
+    <view class="date-selector">
+      <scroll-view scroll-x class="date-scroll">
+        <view
+          class="date-item {{ selectedDateIndex === index ? 'active' : '' }} {{
+            item.isFull && !item.waitlistStatus ? 'disabled' : ''
+          }} {{ item.waitlistStatus === 'waiting' ? 'waitlist' : '' }} {{ item.waitlistStatus === 'notified' ? 'notified' : '' }}"
+          wx:for="{{ availableDates }}"
+          wx:key="index"
+          bindtap="onSelectDate"
+          data-index="{{ index }}"
+        >
+          <text class="week">{{ item.week }}</text>
+          <text class="day">{{ item.day }}</text>
+          <text
+            wx:if="{{ item.isFull && item.waitlistStatus === 'waiting' }}"
+            class="date-badge"
+          >候补第{{ item.queueNumber }}</text>
+          <text
+            wx:elif="{{ item.isFull && item.waitlistStatus === 'notified' }}"
+            class="date-badge notified-badge"
+          >有空位!</text>
+          <text
+            wx:elif="{{ item.isFull && !item.waitlistStatus }}"
+            class="date-badge full-badge"
+          >约满</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="time-section">
+      <view class="time-grid">
+        <view
+          class="time-item {{ item.isFull ? 'disabled' : '' }} {{
+            selectedTimeIndex === index ? 'active' : ''
+          }}"
+          wx:for="{{ timeSlots }}"
+          wx:key="index"
+          bindtap="onSelectTime"
+          data-index="{{ index }}"
+        >
+          <text class="time">{{ item.time }}</text>
+          <text class="status">{{ item.isFull ? "约满" : "可选" }}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="popup-footer">
+      <t-button
+        wx:if="{{ availableDates[selectedDateIndex].isFull && !availableDates[selectedDateIndex].waitlistStatus }}"
+        theme="warning"
+        block
+        shape="round"
+        bindtap="onJoinWaitlist"
+      >登记候补</t-button>
+      <t-button
+        wx:elif="{{ availableDates[selectedDateIndex].waitlistStatus === 'notified' }}"
+        theme="primary"
+        block
+        shape="round"
+        bindtap="onClosePopup"
+      >有空位，请尽快选择时段预约</t-button>
+      <t-button
+        wx:elif="{{ availableDates[selectedDateIndex].waitlistStatus === 'waiting' }}"
+        theme="danger"
+        variant="outline"
+        block
+        shape="round"
+        bindtap="onCancelWaitlist"
+      >退出候补 (第{{ availableDates[selectedDateIndex].queueNumber }}位)</t-button>
+      <t-button
+        wx:else
+        theme="primary"
+        block
+        shape="round"
+        bindtap="handleConfirmSelection"
+      >下一步</t-button>
+    </view>
+  </view>
+</t-popup>
+
+<t-dialog
+  visible="{{ showBookDialog }}"
+  title="预约确认"
+  confirm-btn="{{ { content: '确定预约', variant: 'base' } }}"
+  cancel-btn="取消"
+  bind:confirm="confirmBooking"
+  bind:cancel="closeBookDialog"
+>
+  <view slot="content" class="confirm-content">
+    <view class="confirm-info-item">
+      <text class="label">预约专家：</text>
+      <text class="value bold">{{ selectedConsultant.name }}</text>
+    </view>
+    <view class="confirm-info-item space-between">
+      <view class="item-sub">
+        <text class="label-tiny">日期：</text>
+        <text class="value bold">{{
+          availableDates[selectedDateIndex].dateStr
+        }}</text>
+      </view>
+      <view class="item-sub">
+        <text class="label-tiny">时间：</text>
+        <text class="value bold">{{ timeSlots[selectedTimeIndex].time }}</text>
+      </view>
+    </view>
+    <view class="confirm-tip">温馨提示：请提前15分钟准备</view>
+  </view>
+</t-dialog>
+
+<t-dialog
+  visible="{{ showCancelDialog }}"
+  title="取消预约"
+  confirm-btn="{{ { content: '确定取消', variant: 'base', theme: 'danger' } }}"
+  cancel-btn="保留预约"
+  bind:confirm="confirmCancelBooking"
+  bind:cancel="closeCancelDialog"
+>
+  <view slot="content" class="confirm-content">
+    <view class="confirm-info-item">
+      <text class="label">咨询师：</text>
+      <text class="value bold">{{ selectedConsultant.name }}</text>
+    </view>
+    <view class="confirm-info-item space-between">
+      <view class="item-sub">
+        <text class="label-tiny">日期：</text>
+        <text class="value bold">{{ selectedConsultant.bookedDate }}</text>
+      </view>
+      <view class="item-sub">
+        <text class="label-tiny">时间：</text>
+        <text class="value bold">{{ selectedConsultant.bookedTime }}</text>
+      </view>
+    </view>
+    <view class="confirm-tip danger">注意：取消后该时段名额将重新释放</view>
+  </view>
+</t-dialog>
+
+<t-dialog
+  visible="{{ showWaitlistDialog }}"
+  title="候补登记"
+  confirm-btn="{{ { content: '确定候补', variant: 'base', theme: 'warning' } }}"
+  cancel-btn="取消"
+  bind:confirm="confirmJoinWaitlist"
+  bind:cancel="closeWaitlistDialog"
+>
+  <view slot="content" class="confirm-content">
+    <view class="confirm-info-item">
+      <text class="label">咨询师：</text>
+      <text class="value bold">{{ selectedConsultant.name }}</text>
+    </view>
+    <view class="confirm-info-item">
+      <text class="label">候补日期：</text>
+      <text class="value bold">{{ waitlistDateStr }}</text>
+    </view>
+    <view class="confirm-tip">该日时段已约满，登记候补后如有空位将通知您</view>
+  </view>
+</t-dialog>
+
+<t-dialog
+  visible="{{ showCancelWaitlistDialog }}"
+  title="退出候补"
+  confirm-btn="{{ { content: '确定退出', variant: 'base', theme: 'danger' } }}"
+  cancel-btn="保留候补"
+  bind:confirm="confirmCancelWaitlist"
+  bind:cancel="closeCancelWaitlistDialog"
+>
+  <view slot="content" class="confirm-content">
+    <view class="confirm-info-item">
+      <text class="label">咨询师：</text>
+      <text class="value bold">{{ selectedConsultant.name }}</text>
+    </view>
+    <view class="confirm-info-item">
+      <text class="label">候补日期：</text>
+      <text class="value bold">{{ availableDates[selectedDateIndex].dateStr }}</text>
+    </view>
+    <view class="confirm-tip danger">退出后如需再次候补需重新排队</view>
+  </view>
+</t-dialog>
+
+<t-toast id="t-toast" t-class="custom-toast" direction="column" />
+
+<t-loading
+  theme="spinner"
+  size="40rpx"
+  class="wrapper"
+  wx:if="{{ isPageLoading }}"
+/>

@@ -1,0 +1,13 @@
+{
+  "name": "campus-mental-health",
+  "version": "1.0.0",
+  "description": "Campus Mental Health WeChat Mini Program using TDesign",
+  "main": "app.js",
+  "dependencies": {
+    "tdesign-miniprogram": "^1.12.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

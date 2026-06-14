@@ -1,0 +1,7 @@
+<view wx:if="{{ role === 'consultant' }}">
+  <consultant-exam />
+</view>
+<view wx:elif="{{ role === 'admin' }}">
+  <admin-resource-manage />
+</view>
+<t-toast id="t-toast" />

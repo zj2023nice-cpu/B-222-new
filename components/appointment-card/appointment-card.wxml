@@ -1,0 +1,363 @@
+<view class="appointment-card-host">
+  <!-- 真正的卡片视图块 -->
+  <view class="appointment-card">
+    <view class="card-header">
+      <view class="expert-info">
+        <block wx:if="{{ role === 'student' }}">
+          <t-avatar
+            image="{{ item.consultantAvatar || '' }}"
+            size="80rpx"
+            icon="user"
+            shape="circle"
+            bind:error="onImageError"
+            data-type="consultant"
+          />
+          <view class="expert-text">
+            <view class="name-row">
+              <text class="expert-name">{{ item.consultantName }}</text>
+              <t-tag theme="primary" variant="light" size="small" shape="round">
+                {{ item.consultantTitle || "资深心理专家" }}
+              </t-tag>
+            </view>
+            <view
+              class="expert-expertise"
+              wx:if="{{ item.consultantExpertise }}"
+            >
+              擅长：{{ item.consultantExpertise }}
+            </view>
+          </view>
+        </block>
+
+        <block wx:else>
+          <t-avatar
+            image="{{ item.studentAvatar || '' }}"
+            size="80rpx"
+            icon="user"
+            shape="circle"
+            bind:error="onImageError"
+            data-type="student"
+          />
+          <view class="expert-text">
+            <view class="name-row">
+              <text class="expert-name">{{
+                item.studentName || "学生用户"
+              }}</text>
+              <t-tag theme="primary" variant="light" size="small" shape="round"
+                >学生</t-tag
+              >
+            </view>
+          </view>
+        </block>
+      </view>
+
+      <t-tag
+        theme="{{
+          item.status === 'waitlist'
+            ? 'warning'
+            : role === 'student' && item.status === 'completed' && !item.feedback
+              ? 'warning'
+              : (statusMap &&
+                  item.status &&
+                  statusMap[item.status] &&
+                  statusMap[item.status].theme) ||
+                'default'
+        }}"
+        variant="light"
+      >
+        {{
+          item.status === "waitlist"
+            ? item.waitlistStatus === "notified"
+              ? "候补-有空位"
+              : "候补中"
+            : role === "student" && item.status === "completed" && !item.feedback
+              ? "待评估"
+              : item.status === "completed" && item.feedback
+                ? "已完成"
+                : (statusMap &&
+                    item.status &&
+                    statusMap[item.status] &&
+                    statusMap[item.status].label) ||
+                  ""
+        }}
+      </t-tag>
+    </view>
+
+    <!-- 所有的详情字段展示区 (双端对齐) -->
+    <view class="card-body">
+      <view class="info-item" wx:if="{{ item.status === 'waitlist' && item.queueNumber }}">
+        <t-icon name="sort" size="32rpx" color="#ed7b2f" />
+        <text class="label">候补排队：</text>
+        <text class="value waitlist-queue">第{{ item.queueNumber }}位</text>
+      </view>
+      <view class="info-item">
+        <t-icon name="calendar" size="32rpx" color="#666" />
+        <text class="label">咨询日期：</text>
+        <text class="value">{{ item.dateStr }}</text>
+      </view>
+      <view class="info-item">
+        <t-icon name="time" size="32rpx" color="#666" />
+        <text class="label">咨询时间：</text>
+        <text class="value">{{ item.time }}</text>
+      </view>
+      <view class="info-item" wx:if="{{ item.createTimeDisplay }}">
+        <t-icon name="file-add" size="32rpx" color="#666" />
+        <text class="label">预约时间：</text>
+        <text class="value">{{ item.createTimeDisplay }}</text>
+      </view>
+      <view class="info-item" wx:if="{{ item.processTimeDisplay }}">
+        <t-icon name="assignment" size="32rpx" color="#666" />
+        <text class="label">处理时间：</text>
+        <text class="value">{{ item.processTimeDisplay }}</text>
+      </view>
+      <view
+        class="info-item"
+        wx:if="{{ item.status === 'completed' && item.completeTimeDisplay }}"
+      >
+        <t-icon name="check-circle" size="32rpx" color="#43a047" />
+        <text class="label">结束时间：</text>
+        <text class="value">{{ item.completeTimeDisplay }}</text>
+      </view>
+      <!-- 只有存在反馈内容时，才显示完成时间（即给出评估的时间） -->
+      <view
+        class="info-item"
+        wx:if="{{
+          item.status === 'completed' &&
+            item.feedback &&
+            (item.finishTimeDisplay || item.updateTimeDisplay)
+        }}"
+      >
+        <t-icon name="verify" size="32rpx" color="#43a047" />
+        <text class="label">完成时间：</text>
+        <text class="value">{{
+          item.finishTimeDisplay || item.updateTimeDisplay
+        }}</text>
+      </view>
+
+      <!-- 异常状态特殊显示 -->
+      <view
+        class="info-item cancelled-info"
+        wx:if="{{ item.status === 'cancelled' && item.formattedCancelTime }}"
+      >
+        <t-icon name="error-circle" size="32rpx" color="#e34d59" />
+        <text class="label">取消时间：</text>
+        <text class="value danger">{{ item.formattedCancelTime }}</text>
+      </view>
+      <view
+        class="info-item"
+        wx:if="{{ item.status === 'rejected' && item.rejectReason }}"
+      >
+        <t-icon name="close-circle" size="32rpx" color="#e34d59" />
+        <text class="label">拒绝原因：</text>
+        <text class="value danger">{{ item.rejectReason }}</text>
+      </view>
+    </view>
+
+    <!-- Footer Actions (保持之前的按钮逻辑) -->
+    <view class="card-footer" wx:if="{{ showFooter }}">
+      <block wx:if="{{ role === 'student' }}">
+        <block wx:if="{{ item.status === 'waitlist' }}">
+          <t-button
+            theme="danger"
+            variant="outline"
+            size="small"
+            shape="round"
+            bindtap="onAction"
+            data-action="cancelWaitlist"
+            class="footer-btn"
+          >退出候补</t-button>
+          <t-button
+            wx:if="{{ item.waitlistStatus === 'notified' }}"
+            theme="primary"
+            size="small"
+            shape="round"
+            bindtap="onAction"
+            data-action="gotoBook"
+            class="footer-btn"
+          >去预约</t-button>
+        </block>
+        <block
+          wx:elif="{{ item.status === 'booked' || item.status === 'confirmed' }}"
+        >
+          <t-button
+            theme="danger"
+            variant="outline"
+            size="small"
+            shape="round"
+            bindtap="onAction"
+            data-action="cancel"
+            class="footer-btn"
+            >取消预约</t-button
+          >
+          <t-button
+            theme="primary"
+            size="small"
+            shape="round"
+            bindtap="onAction"
+            data-action="contact"
+            class="footer-btn"
+            >联系专家</t-button
+          >
+        </block>
+        <block
+          wx:elif="{{
+            item.status === 'cancelled' ||
+              item.status === 'rejected' ||
+              (item.status === 'completed' && item.feedback)
+          }}"
+        >
+          <t-button
+            theme="danger"
+            variant="text"
+            size="small"
+            shape="circle"
+            icon="delete"
+            bindtap="onAction"
+            data-action="delete"
+            class="footer-btn"
+          />
+        </block>
+      </block>
+
+      <block wx:if="{{ role === 'consultant' }}">
+        <block wx:if="{{ item.status === 'booked' }}">
+          <t-button
+            theme="danger"
+            variant="outline"
+            size="small"
+            shape="round"
+            bindtap="onAction"
+            data-action="reject"
+            class="footer-btn"
+            >拒绝预约</t-button
+          >
+          <t-button
+            theme="primary"
+            size="small"
+            shape="round"
+            bindtap="onAction"
+            data-action="confirm"
+            class="footer-btn"
+            >接受预约</t-button
+          >
+        </block>
+        <block wx:elif="{{ item.status === 'confirmed' }}">
+          <t-button
+            theme="primary"
+            variant="outline"
+            size="small"
+            shape="round"
+            bindtap="onAction"
+            data-action="complete"
+            class="footer-btn"
+            >咨询结束</t-button
+          >
+        </block>
+        <block wx:elif="{{ item.status === 'completed' && !item.feedback }}">
+          <t-button
+            theme="primary"
+            variant="outline"
+            size="small"
+            shape="round"
+            bindtap="onAction"
+            data-action="evaluate"
+            class="footer-btn"
+            >给出评估</t-button
+          >
+        </block>
+        <block wx:else>
+          <t-button
+            theme="danger"
+            variant="text"
+            size="small"
+            shape="circle"
+            icon="delete"
+            bindtap="onAction"
+            data-action="delete"
+            class="footer-btn"
+          />
+        </block>
+      </block>
+      <slot name="extra-footer" />
+    </view>
+  </view>
+
+  <!-- 对话框外置部分保持不变 -->
+  <t-dialog
+    visible="{{ showContactDialog }}"
+    title="联系专家"
+    confirm-btn="{{ { content: '复制电话', variant: 'base' } }}"
+    cancel-btn="关闭"
+    bind:confirm="onConfirmContact"
+    bind:cancel="onCloseDialog"
+    data-type="Contact"
+  >
+    <view slot="content" class="contact-dialog-content">
+      <view class="contact-item">
+        <text class="label">咨询师：</text>
+        <text class="value">{{ item.consultantName }}</text>
+      </view>
+      <view class="contact-item">
+        <text class="label">联系电话：</text>
+        <text class="value phone-number">{{ contactPhone }}</text>
+      </view>
+      <view class="contact-tip">
+        <t-icon name="info-circle" size="28rpx" />
+        <text>请在预约时间内拨打，沟通更顺畅</text>
+      </view>
+    </view>
+  </t-dialog>
+
+  <t-dialog
+    visible="{{ showConfirmDialog }}"
+    title="{{ confirmTitle }}"
+    content="{{ confirmContent }}"
+    confirm-btn="{{
+      { content: confirmText, variant: 'base', theme: 'danger' }
+    }}"
+    cancel-btn="{{ cancelText }}"
+    bind:confirm="onConfirmAction"
+    bind:cancel="onCloseDialog"
+    data-type="Confirm"
+  />
+
+  <t-dialog
+    visible="{{ showEvalDialog }}"
+    title="咨询评估"
+    confirm-btn="{{
+      { content: '确认提交', variant: 'base', theme: 'primary' }
+    }}"
+    cancel-btn="取消"
+    bind:confirm="onConfirmEval"
+    bind:cancel="onCloseDialog"
+    data-type="Eval"
+  >
+    <view slot="content" class="eval-dialog-content">
+      <view class="form-item">
+        <view class="form-label">咨询评分</view>
+        <t-rate
+          value="{{ evalScore }}"
+          bind:change="onScoreChange"
+          variant="filled"
+          size="52rpx"
+          texts="{{ ['极差', '较差', '一般', '良好', '极好'] }}"
+          placement=""
+          show-text
+        />
+      </view>
+      <view class="form-item">
+        <view class="form-label">评估建议</view>
+        <t-textarea
+          t-class="eval-textarea"
+          placeholder="请输入对本次咨询的专业评估与建议..."
+          bordered
+          maxlength="{{ 100 }}"
+          indicator
+          value="{{ evalResult }}"
+          bind:change="onEvalChange"
+        />
+      </view>
+    </view>
+  </t-dialog>
+
+  <t-toast id="t-toast" />
+</view>

@@ -1,0 +1,64 @@
+{
+  "entryPagePath": "pages/main/home/home",
+  "pages": [
+    "pages/main/home/home",
+    "pages/main/records/records",
+    "pages/main/assessment/assessment",
+    "pages/consultant/assessment-edit/edit",
+    "pages/main/exam/exam",
+    "pages/main/mine/mine",
+    "pages/consultant/profile/profile",
+    "pages/login/login",
+    "pages/student/appointment/appointment",
+    "pages/student/appointment-list/appointment-list",
+    "pages/student/articles/articles",
+    "pages/student/articles/article-detail/article-detail",
+    "pages/student/collections/collections",
+    "pages/student/mood/mood",
+    "pages/student/assessment/assessment-detail/assessment-detail",
+    "pages/student/assessment/assessment",
+    "pages/student/exam-records/exam-records",
+    "pages/admin/user-edit/user-edit",
+    "pages/admin/article-edit/article-edit"
+  ],
+  "usingComponents": {},
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "",
+    "backgroundColor": "#f8f8f8",
+    "backgroundTextStyle": "light",
+    "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#0052d9",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/main/home/home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/main/records/records",
+        "text": "记录"
+      },
+      {
+        "pagePath": "pages/main/assessment/assessment",
+        "text": "测评"
+      },
+      {
+        "pagePath": "pages/main/exam/exam",
+        "text": "考试"
+      },
+      {
+        "pagePath": "pages/main/mine/mine",
+        "text": "我的"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

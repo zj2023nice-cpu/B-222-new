@@ -1,0 +1,114 @@
+<view class="container">
+  <t-navbar title="测评详情" left-arrow placeholder />
+
+  <block wx:if="{{ !showResult }}">
+    <view class="header-info">
+      <view class="title">{{ assessmentTitle }}</view>
+    </view>
+
+    <view class="progress-box">
+      <t-progress
+        percentage="{{ progress }}"
+        label="{{ currentStep + 1 }} / {{ questions.length }}"
+        track-color="#f5f5f7"
+      />
+    </view>
+
+    <view class="quiz-container">
+      <view class="question-card" wx:if="{{ questions[currentStep] }}">
+        <text class="question-text"
+          >{{ currentStep + 1 }}. {{ questions[currentStep].title }}</text
+        >
+        <t-radio-group
+          t-class="radio-group"
+          value="{{ answers[currentStep] }}"
+          bind:change="onAnswerChange"
+        >
+          <t-radio
+            wx:for="{{ questions[currentStep].options }}"
+            wx:key="value"
+            value="{{ item.value }}"
+            label="{{ item.label }}"
+            align="right"
+            t-class="custom-radio {{
+              answers[currentStep] === item.value ? 'radio-active' : ''
+            }}"
+            icon="circle"
+          />
+        </t-radio-group>
+      </view>
+    </view>
+
+    <view class="submit-bar">
+      <t-button
+        wx:if="{{ currentStep > 0 }}"
+        theme="light"
+        block
+        t-class="btn-prev"
+        bindtap="prevStep"
+        >上一题</t-button
+      >
+      <t-button
+        wx:if="{{ currentStep < questions.length - 1 }}"
+        theme="primary"
+        block
+        t-class="btn-submit"
+        bindtap="nextStep"
+        disabled="{{ answers[currentStep] === undefined }}"
+        >下一题</t-button
+      >
+      <t-button
+        wx:else
+        theme="primary"
+        block
+        t-class="btn-submit"
+        bindtap="submitQuiz"
+        loading="{{ submitting }}"
+        disabled="{{ answers[currentStep] === undefined }}"
+        >完成提交</t-button
+      >
+    </view>
+  </block>
+
+  <block wx:if="{{ showResult }}">
+    <view class="result-section">
+      <view class="result-header">
+        <view class="result-score">{{ normalizedScore }}</view>
+        <view class="result-score-unit">分</view>
+      </view>
+      <view class="result-label {{ resultLabel === '建议咨询' ? 'label-warning' : resultLabel === '注意调节' ? 'label-caution' : 'label-good' }}">{{ resultLabel }}</view>
+      <view class="result-desc">
+        <text>{{ resultDescription }}</text>
+      </view>
+    </view>
+
+    <view class="recommend-section">
+      <view class="recommend-title">为你推荐</view>
+
+      <view wx:if="{{ articlesLoading }}" class="recommend-loading">
+        <t-loading theme="circular" size="40rpx" text="加载中..." />
+      </view>
+
+      <block wx:elif="{{ recommendedArticles.length > 0 }}">
+        <article-card
+          wx:for="{{ recommendedArticles }}"
+          wx:key="_id"
+          article="{{ item }}"
+          bind:click="onArticleClick"
+        />
+      </block>
+
+      <view wx:else class="recommend-empty">
+        <text>暂无推荐内容</text>
+      </view>
+    </view>
+
+    <view class="result-footer">
+      <t-button theme="primary" block t-class="btn-back" bindtap="goBack"
+        >返回测评列表</t-button
+      >
+    </view>
+  </block>
+
+  <t-toast id="t-toast" />
+</view>

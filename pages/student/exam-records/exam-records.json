@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "assessment-record-list": "/components/assessment-record-list/assessment-record-list",
+    "t-toast": "tdesign-miniprogram/toast/toast"
+  },
+  "navigationStyle": "custom"
+}

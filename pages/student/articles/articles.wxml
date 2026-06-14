@@ -1,0 +1,45 @@
+<view class="container">
+  <t-navbar title="心理知识库" left-arrow placeholder />
+  <!-- 顶部搜索 -->
+  <view class="header">
+    <view class="search-box">
+      <t-search
+        placeholder="搜索心理学知识..."
+        shape="round"
+        bind:change="onSearchChange"
+      />
+    </view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <view wx:if="{{ isLoading }}" class="skeleton-list">
+    <view wx:for="{{ 3 }}" wx:key="index" class="skeleton-item">
+      <t-skeleton rowCol="{{ imageSkeleton }}" animation="flashing" />
+      <view class="skeleton-content">
+        <t-skeleton rowCol="{{ infoSkeleton }}" animation="flashing" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 文章列表 -->
+  <list-view
+    wx:if="{{ !isLoading }}"
+    isRefreshing="{{ isRefreshing }}"
+    isEmpty="{{ articles.length === 0 }}"
+    showFooter="{{ articles.length > 0 }}"
+    footerText="知识库已全部加载"
+    emptyText="暂无相关文章"
+    bind:refresh="onPullDownRefresh"
+  >
+    <view class="article-list">
+      <article-card
+        wx:for="{{ articles }}"
+        wx:key="_id"
+        article="{{ item }}"
+        bind:click="navToDetail"
+      />
+    </view>
+  </list-view>
+</view>
+
+<t-toast id="t-toast" />

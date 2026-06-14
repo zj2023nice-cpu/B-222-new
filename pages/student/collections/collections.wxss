@@ -1,0 +1,36 @@
+.container {
+  background-color: #f8f8f8;
+  min-height: 100vh;
+}
+
+.search-wrap {
+  background-color: #fff;
+  padding: 24rpx 32rpx;
+}
+
+.collection-list {
+  display: flex;
+  flex-direction: column;
+  padding: 32rpx;
+}
+
+/* 骨架屏列表 */
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+  padding: 32rpx;
+}
+
+.skeleton-item {
+  background: #fff;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  display: flex;
+  gap: 24rpx;
+  align-items: flex-start;
+}
+
+.skeleton-content {
+  flex: 1;
+}

@@ -1,0 +1,131 @@
+<view
+  class="mine-container {{ userInfo && !showProfileSetup ? 'logged-in' : '' }}"
+>
+  <!-- 1. 未登录状态 -->
+  <view wx:if="{{ !userInfo && !showProfileSetup }}" class="auth-wrapper">
+    <view class="auth-section">
+      <view class="logo-wrap">
+        <image class="app-logo" src="/images/tab_home_active.png" />
+      </view>
+      <view class="app-name">校园心理健康云</view>
+      <view class="app-motto">遇见 DeepSeek，遇见更好的自己</view>
+    </view>
+
+    <view class="role-selection">
+      <view class="tip-text">请选择您的身份</view>
+      <view class="role-tabs">
+        <view
+          class="role-tab {{ role === 'user' ? 'active' : '' }}"
+          bindtap="selectRole"
+          data-role="user"
+        >
+          <t-icon name="user" size="32rpx" />
+          <text>学生</text>
+        </view>
+        <view
+          class="role-tab {{ role === 'consultant' ? 'active' : '' }}"
+          bindtap="selectRole"
+          data-role="consultant"
+        >
+          <t-icon name="user-talk" size="32rpx" />
+          <text>咨询师</text>
+        </view>
+        <view
+          class="role-tab {{ role === 'admin' ? 'active' : '' }}"
+          bindtap="selectRole"
+          data-role="admin"
+        >
+          <t-icon name="setting" size="32rpx" />
+          <text>管理员</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="action-section">
+      <t-button
+        theme="primary"
+        size="large"
+        block
+        shape="round"
+        bindtap="handleLoginClick"
+        class="login-btn"
+        >立即开启探索</t-button
+      >
+      <view class="hint-text">未注册账号将自动为您同步资料</view>
+    </view>
+  </view>
+
+  <!-- 2. 完善资料视图 -->
+  <view wx:if="{{ showProfileSetup }}" class="setup-wrapper">
+    <view class="setup-header">
+      <view class="setup-title">开启心灵之旅</view>
+      <view class="setup-desc"
+        >完善您的资料，让我们能为您提供更精准的心理守护</view
+      >
+    </view>
+
+    <view class="setup-content">
+      <button
+        class="avatar-button"
+        open-type="chooseAvatar"
+        bindchooseavatar="onChooseAvatar"
+      >
+        <t-avatar
+          image="{{ tempAvatar }}"
+          icon="user"
+          size="160rpx"
+          shape="circle"
+        />
+        <view class="avatar-edit-icon">
+          <t-icon name="camera" size="24rpx" color="#fff" />
+        </view>
+      </button>
+
+      <view class="setup-form">
+        <view class="label-row">
+          <view class="input-label">灵感昵称</view>
+          <view class="input-tip">💡 建议使用能带给您积极暗示的昵称</view>
+        </view>
+        <view class="input-field">
+          <input
+            type="nickname"
+            class="nickname-input-real"
+            placeholder="点击此处输入或选择昵称"
+            value="{{ tempNickname }}"
+            bindinput="onNicknameChange"
+            bindblur="onNicknameChange"
+          />
+        </view>
+      </view>
+    </view>
+
+    <view class="setup-actions">
+      <t-button
+        theme="primary"
+        size="large"
+        block
+        shape="round"
+        bindtap="onProfileSubmit"
+        disabled="{{ !tempAvatar || !tempNickname }}"
+        >完成设置</t-button
+      >
+      <t-button
+        variant="text"
+        block
+        style="margin-top: 24rpx; color: #999"
+        bindtap="resetAuth"
+        >返回上一步</t-button
+      >
+    </view>
+  </view>
+
+  <!-- 3. 已登录过渡状态 (可选) -->
+  <view wx:if="{{ userInfo && !showProfileSetup }}" class="success-wrapper">
+    <t-icon name="check-circle-filled" size="120rpx" color="#0052d9" />
+    <view class="success-text">登录成功，正在跳转...</view>
+  </view>
+
+  <t-message id="t-message" />
+  <t-toast id="t-toast" />
+  <t-dialog id="t-dialog" />
+</view>

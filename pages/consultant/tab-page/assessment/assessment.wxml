@@ -1,0 +1,78 @@
+<view class="container">
+  <t-navbar title="测评管理" left-arrow="{{ false }}" placeholder />
+
+  <view class="search-container">
+    <t-search
+      placeholder="搜索测评工具标题或描述"
+      value="{{ searchValue }}"
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+    />
+  </view>
+
+  <!-- 骨架屏 -->
+  <view wx:if="{{ isLoading }}" class="skeleton-list">
+    <view wx:for="{{ 4 }}" wx:key="index" class="skeleton-card">
+      <t-skeleton rowCol="{{ rowSkeleton }}" animation="flashing" />
+    </view>
+  </view>
+
+  <list-view
+    wx:if="{{ !isLoading }}"
+    isRefreshing="{{ isRefreshing }}"
+    isEmpty="{{ assessments.length === 0 }}"
+    showFooter="{{ assessments.length > 0 }}"
+    footerText="已加载全部测评工具"
+    emptyText="{{ searchValue ? '没有找到相关的测评工具' : '暂无测评工具' }}"
+    emptySubText="{{
+      searchValue ? '换个关键词试试吧' : '点击右下角按钮创建一个新测评'
+    }}"
+    bind:refresh="onRefresh"
+  >
+    <view class="assess-list">
+      <view
+        class="assess-card"
+        wx:for="{{ assessments }}"
+        wx:key="_id"
+        bindtap="editAssessment"
+        data-id="{{ item._id }}"
+        hover-class="card-hover"
+      >
+        <view class="card-header">
+          <text class="assess-title">{{ item.title }}</text>
+          <t-icon
+            name="edit-1"
+            size="36rpx"
+            color="#999"
+            catchtap="editAssessment"
+            data-id="{{ item._id }}"
+          />
+        </view>
+        <view class="assess-desc">{{ item.description || "暂无描述" }}</view>
+        <view class="card-footer">
+          <t-tag variant="light" theme="primary" size="small" icon="time"
+            >{{ item.duration }} 分钟</t-tag
+          >
+          <t-tag
+            variant="light"
+            theme="{{ item.count > 0 ? 'success' : 'default' }}"
+            size="small"
+            icon="user"
+            style="margin-left: 16rpx"
+            >{{ item.count || 0 }} 人已测</t-tag
+          >
+        </view>
+      </view>
+    </view>
+  </list-view>
+
+  <t-toast id="t-toast" />
+  <t-dialog id="t-dialog" />
+  <t-fab
+    t-class="fab-btn"
+    icon="add"
+    bind:click="addAssessment"
+    aria-label="新建测评"
+    using-custom-navbar
+  />
+</view>

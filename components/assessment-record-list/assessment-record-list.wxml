@@ -1,0 +1,103 @@
+<view class="assessment-record-list">
+  <t-sticky offset-top="{{ navbarHeight }}">
+    <view class="search-box">
+      <t-search
+        placeholder="{{
+          role === 'consultant' ? '搜索学生姓名' : '搜索测评标题'
+        }}"
+        bind:change="onSearch"
+        shape="round"
+      />
+    </view>
+  </t-sticky>
+
+  <!-- 骨架屏 -->
+  <view wx:if="{{ isLoading }}" class="skeleton-list">
+    <view wx:for="{{ 4 }}" wx:key="index" class="skeleton-card">
+      <t-skeleton rowCol="{{ rowSkeleton }}" animation="flashing" />
+    </view>
+  </view>
+
+  <list-view
+    wx:else
+    isRefreshing="{{ isRefreshing }}"
+    isEmpty="{{ records.length === 0 }}"
+    showFooter="{{ records.length > 0 }}"
+    footerText="已加载全部测评记录"
+    emptyText="暂无提交记录"
+    bind:refresh="onRefresh"
+    minHeight="calc(100vh - 400rpx)"
+  >
+    <view class="record-list">
+      <view
+        class="record-card {{
+          item.score < 60 ? 'warning-card' : 'normal-card'
+        }}"
+        wx:for="{{ records }}"
+        wx:key="_id"
+        hover-class="card-hover"
+      >
+        <view class="card-top">
+          <view class="user-info">
+            <t-avatar
+              image="{{ item.userAvatar || '' }}"
+              size="80rpx"
+              shape="circle"
+              icon="user"
+              bind:error="onImageError"
+              data-index="{{ index }}"
+              t-class="avatar"
+            >
+              {{ item.userName ? item.userName[0] : "" }}
+            </t-avatar>
+            <view class="name-box">
+              <text class="user-name">{{ item.userName || "匿名学生" }}</text>
+              <text class="date">{{ item.dateStr }}</text>
+            </view>
+          </view>
+          <t-tag
+            theme="{{ item.tagTheme }}"
+            variant="light"
+            size="small"
+            t-class="type-tag"
+          >
+            {{ item.tagText }}
+          </t-tag>
+        </view>
+
+        <view class="card-mid">
+          <view class="assessment-name">{{ item.assessmentTitle }}</view>
+        </view>
+
+        <view class="card-bottom">
+          <view class="info-group">
+            <view class="score-display">
+              <text class="label">得分</text>
+              <text
+                class="score-val {{
+                  item.score < 60 ? 'text-warning' : 'text-primary'
+                }}"
+                >{{ item.score }}</text
+              >
+            </view>
+            <view class="result-display">
+              <text class="label">结果评价</text>
+              <text class="result-val">{{ item.result || "已计分" }}</text>
+            </view>
+          </view>
+
+          <view class="status-badge" wx:if="{{ item.score < 60 }}">
+            <t-icon name="error-circle-filled" size="32rpx" color="#ed7b2f" />
+            <text class="status-text">分数预警</text>
+          </view>
+          <view class="status-badge success-badge" wx:else>
+            <t-icon name="check-circle-filled" size="32rpx" color="#00a870" />
+            <text class="status-text">正常状态</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </list-view>
+
+  <t-toast id="t-toast" />
+</view>

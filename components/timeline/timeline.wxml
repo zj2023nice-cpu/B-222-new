@@ -1,0 +1,77 @@
+<view class="timeline-container">
+  <view class="timeline-header">
+    <text class="timeline-title">成长时间线</text>
+    <text class="timeline-subtitle">记录你的每一步成长</text>
+  </view>
+
+  <block wx:if="{{ loading }}">
+    <view class="timeline-loading">
+      <t-loading theme="circular" size="40rpx" />
+      <text class="loading-text">加载中...</text>
+    </view>
+  </block>
+
+  <block wx:elif="{{ groupedItems.length === 0 }}">
+    <t-empty
+      t-class="timeline-empty"
+      description="暂无记录，去记录你的第一步吧"
+      icon="browse"
+    />
+  </block>
+
+  <block wx:else>
+    <view class="timeline-list">
+      <view
+        class="timeline-group"
+        wx:for="{{ groupedItems }}"
+        wx:for-item="group"
+        wx:key="date"
+      >
+        <view class="timeline-date-label">
+          <view class="date-dot"></view>
+          <text class="date-text">{{ group.date }}</text>
+        </view>
+
+        <view
+          class="timeline-item {{ index === group.items.length - 1 ? 'timeline-item-last' : '' }}"
+          wx:for="{{ group.items }}"
+          wx:for-item="item"
+          wx:for-index="itemIndex"
+          wx:key="id"
+          bindtap="onItemTap"
+          data-item="{{ item }}"
+        >
+          <view class="timeline-node-wrap">
+            <view
+              class="timeline-node node-{{ item.type }}"
+            ></view>
+            <view
+              class="timeline-line {{ itemIndex === group.items.length - 1 ? 'timeline-line-last' : '' }}"
+            ></view>
+          </view>
+
+          <view class="timeline-content">
+            <view class="timeline-content-header">
+              <t-tag
+                theme="{{ typeMap[item.type].theme }}"
+                variant="light"
+                size="small"
+                shape="round"
+              >
+                {{ typeMap[item.type].label }}
+              </t-tag>
+              <text class="timeline-time">{{ item.dateDisplay }}</text>
+            </view>
+            <view class="timeline-desc">{{ item.desc }}</view>
+            <view
+              class="timeline-subdesc"
+              wx:if="{{ item.subDesc }}"
+            >
+              {{ item.subDesc }}
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

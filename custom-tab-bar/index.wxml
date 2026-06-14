@@ -1,0 +1,16 @@
+<t-tab-bar
+  value="{{ selected }}"
+  bindchange="onChange"
+  split="{{ false }}"
+  fixed="{{ true }}"
+>
+  <t-tab-bar-item
+    wx:for="{{ list }}"
+    wx:key="index"
+    value="{{ index }}"
+    icon="{{ item.icon }}"
+    badge-props="{{ item.badge || { count: 0 } }}"
+  >
+    {{ item.text }}
+  </t-tab-bar-item>
+</t-tab-bar>

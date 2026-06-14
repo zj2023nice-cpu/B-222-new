@@ -1,0 +1,154 @@
+<view class="profile-form-container">
+  <view class="header-decoration"></view>
+
+  <view class="profile-card">
+    <!-- 1. 头像区域 (受控于组件逻辑) -->
+    <view class="avatar-section" bindtap="onChangeAvatar">
+      <view class="avatar-wrapper">
+        <t-avatar
+          t-class-image="avatar-image"
+          image="{{ userInfo.avatar }}"
+          icon="user"
+          size="160rpx"
+          shape="circle"
+          bind:error="onAvatarError"
+        />
+        <view class="camera-icon-wrap">
+          <t-icon name="camera" size="32rpx" color="#fff" />
+        </view>
+      </view>
+      <view class="avatar-desc">点击更换头像</view>
+    </view>
+
+    <!-- 2. 表单区域 -->
+    <view class="form-section">
+      <t-cell-group theme="card" t-class="custom-cell-group">
+        <!-- 姓名：通用的 -->
+        <t-input
+          t-class="custom-input"
+          t-class-suffix="suffix-icon"
+          t-class-label="form-label"
+          label="姓名"
+          value="{{ userInfo.name }}"
+          placeholder="请输入真实姓名"
+          align="right"
+          bindchange="onInputChange"
+          data-field="name"
+          maxlength="{{ 20 }}"
+        >
+          <!-- 透明 Icon 占位逻辑，确保姓名文字对齐 -->
+          <t-icon
+            slot="suffix"
+            name="chevron-right"
+            size="48rpx"
+            color="transparent"
+          />
+        </t-input>
+
+        <!-- 只有咨询师角色（或者管理员正在修改咨询师资料）才显示以下字段 -->
+        <block wx:if="{{ userRole === 'consultant' }}">
+          <t-cell
+            title="职称"
+            note="{{ userInfo.title || '请选择' }}"
+            arrow
+            bindtap="togglePicker"
+            data-type="title"
+            t-class-title="form-label"
+            t-class-note="{{
+              userInfo.title ? 'note-active' : 'note-placeholder'
+            }}"
+          />
+
+          <t-cell
+            title="擅长领域"
+            note="{{ userInfo.expertise || '请选择' }}"
+            arrow
+            bindtap="togglePicker"
+            data-type="expertise"
+            t-class-title="form-label"
+            t-class-note="{{
+              userInfo.expertise ? 'note-active' : 'note-placeholder'
+            }}"
+          />
+
+          <view class="textarea-cell">
+            <view class="textarea-label">个人简介</view>
+            <t-textarea
+              value="{{ userInfo.introduction }}"
+              placeholder="请详细描述专业背景、咨询风格等..."
+              maxlength="{{ 100 }}"
+              indicator
+              bindchange="onInputChange"
+              data-field="introduction"
+              disableDefaultPadding="{{ true }}"
+              t-class="custom-textarea"
+            />
+          </view>
+        </block>
+      </t-cell-group>
+
+      <!-- 3. 操作按钮：文字由父页面属性决定 -->
+      <view class="action-section">
+        <t-button
+          theme="primary"
+          block
+          size="large"
+          shape="round"
+          bindtap="saveProfile"
+          loading="{{ isSaving }}"
+          t-class="submit-btn"
+        >
+          {{ submitBtnText }}
+        </t-button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 选择器弹窗 (保持在组件内部，父页面无需关心) -->
+  <t-picker
+    visible="{{ titleVisible }}"
+    value="{{ [userInfo.title] }}"
+    data-type="title"
+    title="选择职称"
+    cancelBtn="取消"
+    confirmBtn="确认"
+    bindconfirm="onPickerConfirm"
+    bindcancel="togglePicker"
+  >
+    <t-picker-item options="{{ titleOptions }}" />
+  </t-picker>
+
+  <t-popup
+    visible="{{ expertiseVisible }}"
+    placement="bottom"
+    bind:visible-change="togglePicker"
+    data-type="expertise"
+  >
+    <view class="multi-select-container">
+      <view class="popup-header">
+        <text class="popup-cancel" bindtap="togglePicker" data-type="expertise"
+          >取消</text
+        >
+        <text class="popup-title">选择擅长领域</text>
+        <text class="popup-confirm" bindtap="onExpertiseConfirm">确认</text>
+      </view>
+      <scroll-view scroll-y class="popup-content">
+        <t-checkbox-group
+          value="{{ tempExpertise }}"
+          bindchange="onExpertiseChange"
+        >
+          <t-checkbox
+            wx:for="{{ expertiseOptions }}"
+            wx:key="value"
+            label="{{ item.label }}"
+            value="{{ item.value }}"
+            align="right"
+            borderless="{{ true }}"
+          />
+        </t-checkbox-group>
+      </scroll-view>
+    </view>
+  </t-popup>
+</view>
+
+<t-toast id="t-toast" />

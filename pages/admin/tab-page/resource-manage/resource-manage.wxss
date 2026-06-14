@@ -1,0 +1,263 @@
+.container {
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.banner-header {
+  padding: 24rpx;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.search-bar {
+  flex: 1;
+  padding: 0;
+}
+
+/* Skeleton Styles */
+.skeleton-wrap {
+  padding: 32rpx 32rpx 0;
+}
+
+.skeleton-image-bg {
+  width: 100%;
+  height: 320rpx;
+  background: #f1f5f9;
+}
+
+.skeleton-line {
+  background: #f1f5f9;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.skeleton-line.title {
+  width: 40%;
+  height: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.skeleton-line.content {
+  width: 100%;
+  height: 24rpx;
+}
+
+.skeleton-line.content.short {
+  width: 60%;
+}
+
+.skeleton-line.meta {
+  width: 120rpx;
+  height: 20rpx;
+  margin-bottom: 0;
+}
+
+.skeleton-circle {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #f1f5f9;
+}
+
+.pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.banner-list {
+  padding: 32rpx 32rpx 0;
+}
+
+.banner-item {
+  background: #fff;
+  border-radius: 24rpx;
+  overflow: hidden;
+  margin-bottom: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.banner-img {
+  width: 100%;
+  height: 320rpx;
+}
+
+.banner-info {
+  padding: 24rpx;
+  flex: 1;
+}
+
+.banner-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.banner-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1e293b;
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.banner-content-preview {
+  font-size: 24rpx;
+  color: #64748b;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+}
+
+.banner-meta {
+  font-size: 22rpx;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.status-indicator {
+  font-weight: 500;
+  white-space: nowrap;
+  width: 150rpx;
+}
+
+.status-indicator.active {
+  color: #00a870;
+  text-align: right;
+}
+
+.status-indicator:last-child {
+  text-align: right;
+}
+
+.banner-actions {
+  border-top: 1rpx solid #f1f5f9;
+  padding: 16rpx 24rpx;
+  display: flex;
+  justify-content: flex-end;
+  gap: 24rpx;
+}
+
+.banner-action-btn {
+  --td-button-text-font-size: 36rpx;
+  --td-button-medium-height: 56rpx;
+}
+
+.action-btn-status {
+  --td-button-primary-text-color: rgb(238, 195, 52);
+}
+
+/* Popup Form Optimization */
+.popup-content {
+  background: #ffffff;
+  border-radius: 40rpx 40rpx 0 0;
+}
+
+.popup-header {
+  padding: 40rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2rpx solid #f1f5f9;
+}
+
+.popup-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 1rpx;
+}
+
+.form-scroll {
+  flex: 1;
+  padding: 0 40rpx;
+  box-sizing: border-box;
+  max-height: 900rpx;
+}
+
+.form-title-suffix {
+  color: #94a3b8;
+}
+
+.form-section-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #64748b;
+  margin: 40rpx 0 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.form-section-title::before {
+  content: "";
+  width: 6rpx;
+  height: 24rpx;
+  background: #0052d9;
+  border-radius: 4rpx;
+}
+
+.form-item {
+  margin-bottom: 40rpx;
+  background: #f8fafc;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  transition: all 0.3s;
+}
+
+.form-item.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx 24rpx;
+}
+
+.form-item.row .title-label {
+  margin-bottom: 0;
+}
+
+/* TDesign Component Overrides for Form */
+.form-field-class {
+  --td-input-bg-color: transparent;
+  --td-textarea-background-color: transparent;
+  --td-input-border-left-space: 12rpx;
+}
+
+.form-actions {
+  padding: 40rpx;
+  background: #ffffff;
+}
+
+.btn-submit {
+  --td-button-medium-height: 96rpx;
+  font-weight: 600;
+  box-shadow: 0 8rpx 20rpx rgba(0, 82, 217, 0.2);
+}
+
+.btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,29 @@
+.pull-down-refresh {
+  display: block;
+  width: 100%;
+}
+
+/* 关键：让内容区域至少撑满刷新组件的高度 */
+.list-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  padding-bottom: var(--tab-bar-height, env(safe-area-inset-bottom));
+}
+
+.footer-divider-wrap {
+  width: 100%;
+  padding: var(--footer-padding, 0 32rpx 40rpx);
+  box-sizing: border-box;
+}
+
+/* 修改空状态样式，使其在容器内垂直水平居中 */
+.empty-wrap {
+  min-height: 60vh;
+  flex: 1; /* 撑满剩余空间 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}

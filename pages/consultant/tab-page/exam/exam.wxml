@@ -1,0 +1,4 @@
+<view class="exam-records">
+  <t-navbar title="测评记录" placeholder />
+  <assessment-record-list role="consultant" navbarHeight="{{ navbarHeight }}" />
+</view>

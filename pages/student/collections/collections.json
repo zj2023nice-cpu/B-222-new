@@ -1,0 +1,16 @@
+{
+  "navigationBarTitleText": "我的收藏",
+  "usingComponents": {
+    "article-card": "/components/article-card/article-card",
+    "t-empty": "tdesign-miniprogram/empty/empty",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-overlay": "tdesign-miniprogram/overlay/overlay",
+    "list-view": "../../../components/list-view/list-view",
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-search": "tdesign-miniprogram/search/search",
+    "t-sticky": "tdesign-miniprogram/sticky/sticky",
+    "t-skeleton": "tdesign-miniprogram/skeleton/skeleton"
+  }
+}

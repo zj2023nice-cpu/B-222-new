@@ -1,0 +1,123 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #f6f6f6;
+  padding-bottom: calc(var(--tab-bar-height, 180rpx) + 40rpx);
+}
+
+.user-header {
+  position: relative;
+  background-color: transparent;
+  padding-bottom: 24rpx;
+}
+
+.header-bg {
+  height: 220rpx;
+  background: linear-gradient(43deg, #8ec5fc 0%, #e0c3fc 50%, #ffdee9 100%);
+  border-radius: 0 0 100rpx 100rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.user-card-wrap {
+  margin: -160rpx 32rpx 0;
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 48rpx 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+
+.user-info-main {
+  display: flex;
+  align-items: center;
+  margin-bottom: 48rpx;
+}
+
+.user-text {
+  flex: 1;
+  margin-left: 32rpx;
+}
+
+.user-name-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.user-name {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  margin-right: 20rpx;
+}
+
+.user-status {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 2rpx solid #f8f8f8;
+  padding-top: 40rpx;
+}
+
+.stats-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.stats-num {
+  font-size: 38rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+  display: flex;
+  align-items: baseline;
+}
+
+.stats-num .unit {
+  font-size: 24rpx;
+  margin-left: 4rpx;
+  font-weight: normal;
+  color: #999;
+}
+
+.stats-label {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.divider {
+  width: 2rpx;
+  height: 48rpx;
+  background-color: #eee;
+}
+
+.menu-section {
+  margin-top: 32rpx;
+}
+
+.logout-wrap {
+  margin: 64rpx 32rpx 32rpx;
+  border-radius: 48rpx;
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.logout-wrap:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.footer-tip {
+  text-align: center;
+  font-size: 22rpx;
+  color: #ccc;
+  padding: 40rpx 0;
+}

@@ -1,0 +1,59 @@
+<view class="article-card" bindtap="onTap">
+  <view class="article-cover-container">
+    <t-image
+      src="{{ article.cover || '' }}"
+      width="220rpx"
+      height="160rpx"
+      shape="round"
+      mode="aspectFill"
+      class="article-cover {{ article.isDeleted ? 'image-deleted' : '' }}"
+      lazy-load
+    >
+      <t-icon slot="loading" name="loading" size="24rpx" color="#999" />
+      <t-icon slot="error" name="image-error" size="24rpx" color="#999" />
+    </t-image>
+    <!-- 已删除遮罩 -->
+    <view wx:if="{{ article.isDeleted }}" class="deleted-overlay">
+      <text class="deleted-text">已删除</text>
+    </view>
+  </view>
+
+  <view class="article-content">
+    <view class="article-title-row">
+      <view
+        class="article-title {{ article.isDeleted ? 'text-deleted' : '' }}"
+        >{{ article.title }}</view
+      >
+      <!-- 收藏模式：显示实心星标，点击取消收藏 -->
+      <view
+        wx:if="{{ showCollectMode }}"
+        class="collect-icon-area"
+        catchtap="onCollectTap"
+        data-type="collect"
+      >
+        <t-icon
+          name="star-filled"
+          size="36rpx"
+          color="#ed7b2f"
+          data-type="collect"
+        />
+      </view>
+    </view>
+    <view class="article-bottom">
+      <t-tag
+        theme="{{ article.isDeleted ? 'default' : 'primary' }}"
+        variant="light"
+        size="small"
+        shape="round"
+        class="article-tag"
+      >
+        {{ article.category }}
+      </t-tag>
+      <!-- 始终显示阅读量 -->
+      <view class="article-views" wx:if="{{ !article.isDeleted }}">
+        <t-icon name="browse" size="28rpx" class="view-icon" />
+        <text>{{ article.views }}</text>
+      </view>
+    </view>
+  </view>
+</view>

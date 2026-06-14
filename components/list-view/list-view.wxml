@@ -1,0 +1,30 @@
+<t-pull-down-refresh
+  value="{{ isRefreshing }}"
+  loadingProps="{{ loadingProps }}"
+  t-class="pull-down-refresh"
+  t-class-indicator="indicator-blue"
+  bind:refresh="onRefresh"
+  style="{{ customStyle }}"
+  enable-passive
+  show-scrollbar="{{ false }}"
+>
+  <view class="list-content-wrapper" style="min-height: {{ minHeight }}">
+    <!-- 列表内容插槽 -->
+    <slot />
+
+    <!-- 到底分割线 -->
+    <view
+      class="footer-divider-wrap class-footer-wrap"
+      wx:if="{{ showFooter && !isEmpty }}"
+    >
+      <t-divider content="{{ footerText }}" dashed t-class="custom-divider" />
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-wrap" wx:if="{{ isEmpty }}">
+      <t-empty icon="{{ emptyIcon }}" description="{{ emptyText }}">
+        <slot name="empty-action" slot="action" />
+      </t-empty>
+    </view>
+  </view>
+</t-pull-down-refresh>

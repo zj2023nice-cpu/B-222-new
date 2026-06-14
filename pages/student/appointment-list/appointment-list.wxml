@@ -1,0 +1,99 @@
+<view class="container">
+  <t-navbar title="预约记录" left-arrow placeholder />
+
+  <t-sticky offset-top="{{ stickyProps.offsetTop }}">
+    <view class="header-sticky">
+      <view class="search-wrap">
+        <t-search
+          value="{{ keyword }}"
+          placeholder="搜索专家姓名或领域"
+          shape="round"
+          bind:change="onSearch"
+          bind:clear="onSearchClear"
+          bind:submit="onSearch"
+        />
+      </view>
+      <t-tabs value="{{ currentStatus }}" bind:change="onTabChange">
+        <t-tab-panel
+          wx:for="{{ tabs }}"
+          wx:key="value"
+          label="{{ item.label }}"
+          value="{{ item.value }}"
+          badge-props="{{
+          item.value === 'waitlist'
+            ? { count: waitlistCount }
+            : item.value === 'booked'
+              ? { count: pendingCount }
+              : item.value === 'confirmed'
+                ? { count: confirmedCount }
+                : item.value === 'rejected'
+                  ? { count: rejectedCount }
+                  : null
+        }}"
+        />
+      </t-tabs>
+    </view>
+  </t-sticky>
+
+  <list-view
+    isRefreshing="{{ isRefreshing }}"
+    isEmpty="{{ appointments.length === 0 && !isLoading }}"
+    showFooter="{{ appointments.length > 0 }}"
+    emptyText="{{
+      keyword || currentStatus ? '未找到相关预约记录' : '暂无预约记录'
+    }}"
+    bind:refresh="onRefresh"
+    minHeight="calc(100vh - {{ stickyProps.offsetTop }}px - 212rpx)"
+  >
+    <!-- 骨架屏 -->
+    <view wx:if="{{ isLoading }}" class="skeleton-container">
+      <view wx:for="{{ 3 }}" wx:key="index" class="skeleton-card">
+        <t-skeleton
+          rowCol="{{ rowSkeleton }}"
+          animation="flashing"
+          rowSpacing="24rpx"
+          t-class="appointment-skeleton"
+        />
+      </view>
+    </view>
+
+    <!-- 预约列表 -->
+    <view wx:else class="appointment-list">
+      <appointment-card
+        wx:for="{{ appointments }}"
+        wx:key="_id"
+        item="{{ item }}"
+        role="student"
+        statusMap="{{ statusMap }}"
+        index="{{ index }}"
+        bind:avatarerror="onImageError"
+        bind:action="onCardAction"
+      />
+    </view>
+
+    <!-- 空状态自定义动作 -->
+    <view
+      slot="empty-action"
+      wx:if="{{ appointments.length === 0 && !isLoading }}"
+    >
+      <t-button
+        theme="primary"
+        variant="outline"
+        shape="round"
+        bindtap="navToBook"
+      >
+        去预约
+      </t-button>
+    </view>
+  </list-view>
+</view>
+
+<t-toast id="t-toast" />
+
+<!-- 全局加载图标 -->
+<t-loading
+  theme="spinner"
+  size="40rpx"
+  class="wrapper"
+  wx:if="{{ isPageLoading }}"
+/>

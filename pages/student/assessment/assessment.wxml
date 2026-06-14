@@ -1,0 +1,74 @@
+<view class="container">
+  <t-navbar title="心理测评" left-arrow="{{ true }}" placeholder />
+
+  <t-sticky offset-top="{{ navbarHeight }}">
+    <view class="search-wrap">
+      <t-search
+        placeholder="搜索测评名称"
+        bind:change="onSearch"
+        bind:clear="onSearchClear"
+        value="{{ keyword }}"
+        shape="round"
+      />
+    </view>
+  </t-sticky>
+
+  <!-- 骨架屏 -->
+  <view wx:if="{{ isLoading }}" class="skeleton-list">
+    <view wx:for="{{ 4 }}" wx:key="index" class="skeleton-card">
+      <t-skeleton rowCol="{{ rowSkeleton }}" animation="flashing" />
+    </view>
+  </view>
+
+  <list-view
+    wx:else
+    isRefreshing="{{ isRefreshing }}"
+    isEmpty="{{ assessments.length === 0 }}"
+    showFooter="{{ assessments.length > 0 }}"
+    footerText="遇见更好的自己"
+    emptyText="{{ keyword ? '未搜索到相关测评' : '暂无测评' }}"
+    emptySubText="请稍后再来查看"
+    bind:refresh="onRefresh"
+  >
+    <view class="assess-list">
+      <view
+        class="assess-card"
+        wx:for="{{ assessments }}"
+        wx:key="_id"
+        bindtap="startAssessment"
+        data-id="{{ item._id }}"
+        data-title="{{ item.title }}"
+        hover-class="card-hover"
+      >
+        <view class="card-header">
+          <text class="assess-title">{{ item.title }}</text>
+          <t-icon name="chevron-right" size="40rpx" color="#bbb" />
+        </view>
+        <view class="assess-desc">{{
+          item.description ||
+            "一个专业的心理测评工具，致力于帮助你探索自我，缓解焦虑与压力。"
+        }}</view>
+        <view class="card-footer">
+          <t-tag
+            variant="light"
+            theme="primary"
+            size="small"
+            icon="time"
+            t-class="tag-item"
+            >{{ item.duration }} 分钟</t-tag
+          >
+          <t-tag
+            variant="light"
+            theme="success"
+            size="small"
+            icon="user"
+            t-class="tag-item"
+            >{{ item.count || 0 }} 人已测</t-tag
+          >
+        </view>
+      </view>
+    </view>
+  </list-view>
+
+  <t-toast id="t-toast" />
+</view>

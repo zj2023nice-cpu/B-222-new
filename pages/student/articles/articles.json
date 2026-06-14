@@ -1,0 +1,16 @@
+{
+  "navigationBarTitleText": "心理知识库",
+  "usingComponents": {
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-search": "tdesign-miniprogram/search/search",
+    "t-empty": "tdesign-miniprogram/empty/empty",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-skeleton": "tdesign-miniprogram/skeleton/skeleton",
+    "t-divider": "tdesign-miniprogram/divider/divider",
+    "t-pull-down-refresh": "tdesign-miniprogram/pull-down-refresh/pull-down-refresh",
+    "article-card": "/components/article-card/article-card",
+    "list-view": "/components/list-view/list-view",
+    "t-navbar": "tdesign-miniprogram/navbar/navbar"
+  }
+}

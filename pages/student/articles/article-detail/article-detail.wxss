@@ -1,0 +1,96 @@
+.container {
+  min-height: 100vh;
+  background-color: #fff;
+  padding: 32rpx;
+  box-sizing: border-box;
+}
+
+.skeleton-container {
+  padding: 40rpx 0;
+}
+
+.article-header {
+  margin-bottom: 40rpx;
+}
+
+/* 新增标题和收藏按钮行布局 */
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24rpx; /* 标题和按钮之间的间距 */
+  margin-bottom: 24rpx; /* 原 title 的底部间距移到这里 */
+}
+
+.article-header .title {
+  flex: 1; /* 标题占据剩余空间 */
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #333;
+  line-height: 1.4;
+}
+
+.collect-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  /* 增加一点点击区域 */
+  margin-top: -6rpx; /* 微调对齐 */
+}
+
+.article-header .meta {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.article-header .date {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.article-header .views {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.article-cover {
+  width: 100%;
+  height: 400rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.05);
+  background-color: #f7f8fa;
+}
+
+/* 占位图文字样式 */
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fb;
+  color: #abb0b7;
+  font-size: 24rpx;
+  gap: 12rpx;
+}
+
+.article-body {
+  font-size: 32rpx;
+  color: #444;
+  line-height: 1.8;
+  letter-spacing: 1rpx;
+  word-break: break-all;
+}
+
+.article-footer {
+  margin-top: 60rpx;
+  padding-bottom: 60rpx;
+}

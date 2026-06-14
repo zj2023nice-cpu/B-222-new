@@ -1,0 +1,57 @@
+.container {
+  min-height: 100vh;
+  background-color: #f8f8f8;
+  box-sizing: border-box;
+}
+
+.header-sticky {
+  background-color: #fff;
+}
+
+.search-wrap {
+  padding: 16rpx 32rpx;
+}
+
+.header {
+  margin-bottom: 40rpx;
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.appointment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding: 32rpx;
+}
+
+/* 按钮样式保留，可能需要微调 */
+.footer-btn {
+  --td-button-medium-margin: 0;
+  --td-button-small-margin: 0;
+  --td-button-extra-small-margin: 0;
+  margin: 0;
+}
+
+.skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  padding: 32rpx;
+}
+
+.skeleton-card {
+  background: #fff;
+  padding: 32rpx;
+  border-radius: 24rpx;
+}
+
+/* 骨架屏布局对齐：回归本心，由 CSS 控制布局 */
+.appointment-skeleton .t-skeleton__row {
+  justify-content: flex-start;
+}

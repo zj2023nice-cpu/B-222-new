@@ -1,0 +1,69 @@
+<view class="container">
+  <t-navbar title="预约管理" left-arrow="{{ false }}" placeholder />
+
+  <!-- Fixed Header Section -->
+  <t-sticky offset-top="{{ stickyProps.offsetTop }}" z-index="100">
+    <view class="header-section">
+      <view class="search-wrap">
+        <t-search
+          value="{{ keyword }}"
+          placeholder="{{
+            activeStatus ? '在此分类中搜索学生' : '搜索学生姓名'
+          }}"
+          shape="round"
+          bind:change="onSearch"
+          bind:clear="onSearchClear"
+        />
+      </view>
+      <t-tabs
+        value="{{ activeStatus }}"
+        bind:change="onStatusChange"
+        t-class="tabs-container"
+      >
+        <t-tab-panel
+          wx:for="{{ statusList }}"
+          wx:key="value"
+          label="{{ item.label }}"
+          value="{{ item.value }}"
+          badge-props="{{
+            item.value === 'booked'
+              ? { count: pendingCount || 0 }
+              : { count: 0 }
+          }}"
+        />
+      </t-tabs>
+    </view>
+  </t-sticky>
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-list" wx:if="{{ isLoading || forceLoading }}">
+    <view class="skeleton-card" wx:for="{{ 4 }}" wx:key="index">
+      <t-skeleton rowCol="{{ rowCol }}" animation="flashing" />
+    </view>
+  </view>
+
+  <list-view
+    wx:if="{{ !isLoading && !forceLoading }}"
+    isRefreshing="{{ isRefreshing }}"
+    isEmpty="{{ appointments.length === 0 && !isLoading }}"
+    showFooter="{{ appointments.length > 0 }}"
+    emptyText="暂无预约申请"
+    bind:refresh="onRefresh"
+    minHeight="calc(100vh - 400rpx)"
+  >
+    <view class="appointment-list">
+      <appointment-card
+        wx:for="{{ appointments }}"
+        wx:key="_id"
+        item="{{ item }}"
+        role="consultant"
+        statusMap="{{ statusMap }}"
+        index="{{ index }}"
+        bind:avatarerror="onAvatarError"
+        bind:action="onCardAction"
+      />
+    </view>
+  </list-view>
+</view>
+
+<t-toast id="t-toast" />

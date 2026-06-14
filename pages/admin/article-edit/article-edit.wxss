@@ -1,0 +1,160 @@
+.container {
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  padding-bottom: 240rpx;
+}
+
+.form-container {
+  padding: 32rpx;
+}
+
+/* Card Section Style */
+.form-section {
+  background-color: #ffffff;
+  border-radius: 32rpx;
+  padding: 40rpx 32rpx;
+  margin-bottom: 32rpx;
+  box-shadow: 0 8rpx 24rpx rgba(148, 163, 184, 0.08);
+}
+
+.title-input {
+  --td-input-label-margin-bottom: 0px;
+  --td-input-horizontal-padding: 0;
+  --td-input-suffix-text-color: #999;
+  --td-input-vertical-padding: 32rpx 0;
+  --td-input-border-left-space: 0;
+}
+
+.category-cell {
+  --td-cell-vertical-padding: 32rpx; /* 恢复单值，保证上下对称 */
+  --td-cell-horizontal-padding: 0; /* 左右置零对齐边缘 */
+}
+
+/* Local override for summary label margin since it's middle of section */
+.form-section .title-label {
+  margin-top: 40rpx;
+}
+
+.form-section .title-label.no-margin {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.6; /* 调整行高至 1.6 以达成视线上的水平对齐 */
+}
+
+.form-section .title-label:first-child {
+  margin-top: 0;
+}
+
+/* Cover Upload Area */
+.cover-section {
+  margin-bottom: 32rpx;
+}
+
+.cover-upload-box {
+  width: 100%;
+  height: 420rpx; /* Taller cover area */
+  background-color: #ffffff;
+  border-radius: 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border: 4rpx dashed #e2e8f0; /* Thicker dashed border */
+  transition: all 0.3s ease;
+}
+
+.cover-upload-box:active {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.image-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.cover-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.upload-text {
+  color: #64748b;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.upload-icon {
+  background-color: #eff6ff;
+  border-radius: 50%;
+  padding: 24rpx;
+  color: #3b82f6;
+}
+
+.re-upload-tag {
+  position: absolute;
+  right: 24rpx;
+  bottom: 24rpx;
+  background-color: rgba(15, 23, 42, 0.6);
+  color: #ffffff;
+  font-size: 24rpx;
+  padding: 10rpx 24rpx;
+  border-radius: 100rpx;
+  backdrop-filter: blur(8px);
+  font-weight: 500;
+}
+
+/* Content Textarea */
+.form-section .content-textarea {
+  min-height: 600rpx;
+  background-color: #f8fafc;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  font-size: 32rpx; /* Larger font for reading */
+  line-height: 1.7;
+  color: #334155;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.form-section .content-textarea:focus-within {
+  background-color: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 6rpx rgba(59, 130, 246, 0.1);
+}
+
+.input-class,
+.textarea-class {
+  z-index: 0;
+}
+
+/* Footer Bar */
+.footer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 32rpx 48rpx calc(32rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.05);
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}

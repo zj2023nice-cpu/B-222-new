@@ -1,0 +1,67 @@
+<view class="container">
+  <t-navbar title="文章详情" left-arrow placeholder />
+  <view wx:if="{{ isLoading }}" class="skeleton-container">
+    <t-skeleton rowCol="{{ skeletonConfig }}" animation="flashing" />
+  </view>
+
+  <block wx:else>
+    <!-- 文章头部 -->
+    <view class="article-header">
+      <view class="title-row">
+        <view class="title">{{ article.title }}</view>
+        <view class="collect-btn" bindtap="toggleCollect">
+          <t-icon
+            name="{{ isCollected ? 'star-filled' : 'star' }}"
+            size="48rpx"
+            color="{{ isCollected ? '#ed7b2f' : '#ccc' }}"
+          />
+        </view>
+      </view>
+      <view class="meta">
+        <t-tag theme="primary" variant="light" size="small" shape="round">{{
+          article.category
+        }}</t-tag>
+        <text class="date">{{ article.date }}</text>
+        <view class="views">
+          <t-icon name="browse" size="28rpx" />
+          <text>{{ article.views }}</text>
+        </view>
+      </view>
+    </view>
+
+    <t-image
+      t-class="article-cover"
+      src="{{ article.cover || '' }}"
+      mode="aspectFill"
+      shape="round"
+    >
+      <view slot="loading" class="image-placeholder">
+        <t-loading theme="dots" size="40rpx" />
+      </view>
+      <view slot="error" class="image-placeholder">
+        <t-icon name="image-error" size="48rpx" />
+        <view>暂无封面</view>
+      </view>
+    </t-image>
+
+    <!-- 文章内容 -->
+    <view class="article-body">
+      <rich-text nodes="{{ article.content }}"></rich-text>
+
+      <!-- 文章结束提示 -->
+      <view class="article-footer">
+        <t-divider content="已读完，感受此刻的宁静吧" dashed />
+      </view>
+    </view>
+  </block>
+</view>
+
+<t-toast id="t-toast" />
+
+<!-- 全局加载图标 -->
+<t-loading
+  theme="spinner"
+  size="40rpx"
+  class="wrapper"
+  wx:if="{{ isPageLoading }}"
+/>

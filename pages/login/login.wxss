@@ -1,0 +1,240 @@
+page {
+  background-color: #f6f6f6;
+  height: 100%;
+}
+
+.mine-container {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 1. 未登录状态 */
+.auth-wrapper {
+  padding: 80rpx 60rpx;
+  background-color: #fff;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-section {
+  text-align: center;
+  margin-bottom: 80rpx;
+}
+
+.logo-wrap {
+  width: 180rpx;
+  height: 180rpx;
+  background: #f0f7ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 40rpx;
+}
+
+.app-logo {
+  width: 100rpx;
+  height: 100rpx;
+}
+
+.app-name {
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #333;
+  letter-spacing: 2rpx;
+}
+
+.app-motto {
+  font-size: 26rpx;
+  color: #999;
+  margin-top: 16rpx;
+}
+
+/* 身份选择 */
+.role-selection {
+  margin-bottom: 80rpx;
+}
+
+.tip-text {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 24rpx;
+  text-align: center;
+}
+
+.role-tabs {
+  display: flex;
+  background: #f5f5f5;
+  border-radius: 20rpx;
+  padding: 10rpx;
+}
+
+.role-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  border-radius: 16rpx;
+  transition: all 0.3s;
+}
+
+.role-tab text {
+  margin-left: 12rpx;
+}
+
+.role-tab.active {
+  background: #fff;
+  color: #0052d9;
+  font-weight: bold;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.action-section .login-btn {
+  box-shadow: 0 8rpx 20rpx rgba(0, 82, 217, 0.2);
+}
+
+.hint-text {
+  font-size: 24rpx;
+  color: #ccc;
+  text-align: center;
+  margin-top: 32rpx;
+}
+
+/* 2. 完善资料视图 */
+.setup-wrapper {
+  background: #fff;
+  min-height: 100vh;
+  padding: 60rpx 48rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.setup-header {
+  margin-bottom: 80rpx;
+}
+
+.setup-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.setup-desc {
+  font-size: 28rpx;
+  color: #999;
+  line-height: 1.6;
+}
+
+.setup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-button {
+  width: 160rpx;
+  height: 160rpx;
+  padding: 0;
+  border-radius: 50%;
+  position: relative;
+  background: #f8f8f8;
+  margin-bottom: 80rpx;
+  overflow: visible;
+}
+
+.avatar-button::after {
+  border: none;
+}
+
+.setup-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-edit-icon {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background: #0052d9;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx solid #fff;
+}
+
+.setup-form {
+  width: 100%;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.input-label {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.input-field {
+  background: #f8f8f8;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.input-field:focus-within {
+  border-color: #0052d9;
+  background: #fff;
+}
+
+.nickname-input-real {
+  font-size: 32rpx;
+  height: 48rpx;
+}
+
+.input-tip {
+  font-size: 22rpx;
+  color: #0052d9;
+  margin-top: 0;
+  text-align: right;
+  opacity: 0.8;
+}
+
+.setup-actions {
+  margin-top: 60rpx;
+}
+
+.success-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #fff;
+}
+
+.success-text {
+  margin-top: 32rpx;
+  font-size: 30rpx;
+  color: #666;
+}

@@ -1,0 +1,60 @@
+page {
+  background-color: #f6f6f6;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Helvetica Neue",
+    Helvetica,
+    Segoe UI,
+    Arial,
+    Roboto,
+    "PingFang SC",
+    "miui",
+    "Hiragino Sans GB",
+    "Microsoft Yahei",
+    sans-serif;
+  overflow-x: hidden; /* 全局禁止水平滚动 */
+  box-sizing: border-box;
+
+  /* 自定义的全局可用样式变量 */
+  --safe-bottom-height: env(safe-area-inset-bottom);
+  --tab-bar-height: calc(
+    var(--td-tab-bar-height, 80rpx) + var(--safe-bottom-height)
+  );
+}
+
+view,
+scroll-view,
+swiper,
+button,
+input {
+  box-sizing: border-box;
+}
+
+/* 全局加载图标样式 - 纯图标无遮罩 */
+.wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Global Utilities */
+.title-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.title-label.required::after {
+  content: "*";
+  color: #e34d59;
+  margin-left: 8rpx;
+  font-family: SimSum, serif;
+}

@@ -1,0 +1,239 @@
+<view class="container">
+  <t-navbar title="咨询预约管理" left-arrow="{{ false }}" placeholder />
+
+  <!-- Fixed Header Section -->
+  <t-sticky offset-top="{{ stickyProps.offsetTop }}" z-index="100">
+    <view class="header-section">
+      <!-- Search Bar -->
+      <view class="search-wrap">
+        <t-search
+          value="{{ keyword }}"
+          placeholder="{{
+            activeStatus ? '在此分类中搜索咨询师' : '搜索咨询师姓名'
+          }}"
+          shape="round"
+          bind:change="onSearch"
+          bind:clear="onSearchClear"
+        />
+      </view>
+      <!-- Status Tabs -->
+      <t-tabs
+        value="{{ activeStatus }}"
+        bind:change="onStatusChange"
+        t-class="tabs-container"
+      >
+        <t-tab-panel
+          wx:for="{{ statusList }}"
+          wx:key="value"
+          label="{{ item.label }}"
+          value="{{ item.value }}"
+          badge-props="{{
+            item.value === 'booked'
+              ? { count: stats.pending || 0 }
+              : { count: 0 }
+          }}"
+        />
+      </t-tabs>
+    </view>
+  </t-sticky>
+
+  <list-view
+    isRefreshing="{{ pullDownRefreshing }}"
+    isEmpty="{{ list.length === 0 && !isLoading }}"
+    showFooter="{{ list.length > 0 }}"
+    footerText="{{ hasMore ? '正在加载...' : '已经到底了' }}"
+    emptyText="暂无相关预约记录"
+    minHeight="calc(100vh - 400rpx)"
+    bind:refresh="onPullDownRefresh"
+    bind:loadmore="onLoadMore"
+  >
+    <!-- Skeleton Screen -->
+    <view wx:if="{{ isLoading }}" class="skeleton-wrap">
+      <view class="skeleton-item" wx:for="{{ 3 }}" wx:key="index">
+        <t-skeleton
+          theme="paragraph"
+          animation="gradient"
+          loading="{{ true }}"
+          t-class-text="skeleton-text"
+          t-class-title="skeleton-title"
+        >
+          <view class="skeleton-card">
+            <view class="skeleton-header"></view>
+            <view class="skeleton-content">
+              <view class="skeleton-avatar"></view>
+              <view class="skeleton-info"></view>
+            </view>
+          </view>
+        </t-skeleton>
+      </view>
+    </view>
+
+    <!-- Statistics Summary -->
+    <view class="stats-grid" wx:if="{{ activeStatus === '' && !isLoading }}">
+      <view class="stats-card total" bindtap="showTrendChart">
+        <view class="stats-info">
+          <text class="stats-label">累计预约</text>
+          <text class="stats-value">{{ stats.total || 0 }}</text>
+        </view>
+        <view class="stats-icon-box">
+          <t-icon name="view-module" size="48rpx" color="#3b82f6" />
+        </view>
+      </view>
+      <view class="stats-mini-group">
+        <view
+          class="stats-card mini pending"
+          bindtap="switchToStatus"
+          data-status="booked"
+        >
+          <text class="stats-label">待处理</text>
+          <text class="stats-value">{{ stats.pending || 0 }}</text>
+        </view>
+        <view
+          class="stats-card mini active"
+          bindtap="switchToStatus"
+          data-status="confirmed"
+        >
+          <text class="stats-label">待咨询</text>
+          <text class="stats-value">{{ stats.confirmed || 0 }}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Appointment List -->
+    <view class="appointment-list" wx:if="{{ !isLoading }}">
+      <view class="appointment-card" wx:for="{{ list }}" wx:key="_id">
+        <view class="card-header">
+          <view class="id-info">
+            <t-icon name="time" size="28rpx" color="#94a3b8" />
+            <text class="time-text">{{ item.createTimeDisplay }}</text>
+          </view>
+          <t-tag
+            theme="{{
+              (statusMap &&
+                item.status &&
+                statusMap[item.status] &&
+                statusMap[item.status].theme) ||
+                'default'
+            }}"
+            variant="light"
+            size="small"
+            shape="round"
+          >
+            {{
+              (statusMap &&
+                item.status &&
+                statusMap[item.status] &&
+                statusMap[item.status].label) ||
+                ""
+            }}
+          </t-tag>
+        </view>
+
+        <view class="card-content">
+          <view class="user-info-group">
+            <view class="user-item">
+              <t-avatar
+                image="{{ item.studentAvatar }}"
+                size="80rpx"
+                icon="user"
+                bind:error="onAvatarError"
+                data-index="{{ index }}"
+                data-type="student"
+              />
+              <view class="user-detail">
+                <text class="user-role">学生</text>
+                <text class="user-name">{{ item.studentName }}</text>
+              </view>
+            </view>
+            <view class="connect-line">
+              <view class="dot"></view>
+              <t-icon name="chat" size="32rpx" color="#cbd5e1" />
+              <view class="dot"></view>
+            </view>
+            <view class="user-item right">
+              <view class="user-detail">
+                <text class="user-role">咨询师</text>
+                <text class="user-name">{{ item.consultantName }}</text>
+              </view>
+              <t-avatar
+                image="{{ item.consultantAvatar }}"
+                size="80rpx"
+                icon="user-talk"
+                bind:error="onAvatarError"
+                data-index="{{ index }}"
+                data-type="consultant"
+              />
+            </view>
+          </view>
+
+          <view class="appointment-info">
+            <view class="info-item">
+              <text class="label">预约时间：</text>
+              <text class="value highlight"
+                >{{ item.dateStr }} {{ item.time }}</text
+              >
+            </view>
+            <view class="info-item">
+              <text class="label">咨询师职称：</text>
+              <text class="value">{{ item.consultantTitle }}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- Admin Action Buttons (Only for Pending status) -->
+        <view class="card-footer" wx:if="{{ item.status === 'booked' }}">
+          <t-button
+            theme="danger"
+            variant="outline"
+            size="small"
+            shape="round"
+            bindtap="updateStatus"
+            data-id="{{ item._id }}"
+            data-status="rejected"
+            class="footer-btn"
+          >
+            拒绝预约
+          </t-button>
+          <t-button
+            theme="primary"
+            size="small"
+            shape="round"
+            bindtap="updateStatus"
+            data-id="{{ item._id }}"
+            data-status="confirmed"
+            class="footer-btn"
+          >
+            接受预约
+          </t-button>
+        </view>
+      </view>
+    </view>
+  </list-view>
+
+  <t-toast id="t-toast" />
+
+  <!-- Trend Chart Popup -->
+  <t-popup
+    visible="{{ chartVisible }}"
+    placement="center"
+    bind:visible-change="closeTrendChart"
+  >
+    <view class="trend-popup-content">
+      <view class="popup-header">
+        <text class="popup-title">最近7天预约人数趋势</text>
+        <t-icon
+          name="close"
+          size="40rpx"
+          color="#94a3b8"
+          bindtap="closeTrendChart"
+        />
+      </view>
+      <view class="chart-container">
+        <canvas type="2d" id="trendCanvas" class="trend-canvas"></canvas>
+      </view>
+      <view class="popup-footer">
+        <text class="footer-hint">数据更新自实时预约统计</text>
+      </view>
+    </view>
+  </t-popup>
+</view>

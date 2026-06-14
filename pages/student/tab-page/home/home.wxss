@@ -1,0 +1,141 @@
+.container {
+  /* 基础内容样式 */
+  min-height: 100vh;
+}
+
+.banner {
+  padding: 32rpx;
+  background-color: #f6f6f6;
+}
+
+.custom-swiper {
+  height: 320rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  display: block;
+}
+
+.custom-swiper-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.banner-card {
+  background: linear-gradient(135deg, #0052d9, #00a870);
+  border-radius: 20rpx;
+  padding: 60rpx 40rpx;
+  color: #fff;
+  box-shadow: 0 8rpx 20rpx rgba(0, 82, 217, 0.2);
+}
+
+.banner-card .title {
+  font-size: 44rpx;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+}
+
+.banner-card .desc {
+  font-size: 26rpx;
+  opacity: 0.9;
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+}
+
+.title-main {
+  display: flex;
+  align-items: center;
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.title-icon {
+  margin-right: 12rpx;
+}
+
+.section-desc-right {
+  font-size: 24rpx;
+  color: #999;
+  font-weight: normal;
+}
+
+.functions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10rpx 32rpx;
+  justify-content: space-between;
+}
+
+.func-card {
+  width: 48%;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  margin-bottom: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.func-card:active {
+  transform: scale(0.97);
+}
+
+.func-info {
+  flex: 1;
+}
+
+.func-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.func-tip {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.func-card.ai {
+  background: linear-gradient(to bottom right, #ffffff, #f0f5ff);
+}
+.func-card.appointment {
+  background: linear-gradient(to bottom right, #ffffff, #f6ffed);
+}
+.func-card.articles {
+  background: linear-gradient(to bottom right, #ffffff, #fff7e6);
+}
+.func-card.mood {
+  background: linear-gradient(to bottom right, #ffffff, #f9f0ff);
+}
+
+.skeleton-list {
+  padding: 0 32rpx;
+}
+
+.list-skeleton {
+  margin-bottom: 40rpx;
+}
+
+.article-list {
+  padding: 10rpx 32rpx 0rpx;
+}
+
+.dialog-text-justified {
+  text-align: justify;
+  color: #666;
+  font-size: 28rpx;
+  line-height: 1.6;
+  margin-top: 32rpx;
+  display: block;
+}

@@ -1,0 +1,136 @@
+<view class="container">
+  <t-navbar title="首页" placeholder />
+  <list-view
+    isRefreshing="{{ isRefreshing }}"
+    bind:refresh="onRefresh"
+    showFooter="{{ !isLoading && articles.length > 0 }}"
+    footerText="遇见更好的自己"
+    minHeight="calc(100vh - 100rpx)"
+  >
+    <!-- 1. 顶部轮播 / 骨架屏 -->
+    <view class="banner">
+      <t-skeleton
+        wx:if="{{ isLoading }}"
+        rowCol="{{ bannerSkeleton }}"
+        animation="flashing"
+      />
+      <block wx:else>
+        <t-swiper
+          wx:if="{{ carouselList.length > 0 }}"
+          current="{{ 0 }}"
+          autoplay="{{ true }}"
+          duration="{{ 500 }}"
+          interval="{{ 5000 }}"
+          navigation="{{ { type: 'dots' } }}"
+          list="{{ carouselList }}"
+          height="320rpx"
+          bind:click="onBannerClick"
+          t-class="custom-swiper"
+          t-class-image="custom-swiper-image"
+        />
+
+        <!-- 无数据时的 TDesign 表现：使用默认卡片 -->
+        <view wx:else class="banner-card">
+          <view class="title">遇见更好的自己</view>
+          <view class="desc">基于 DeepSeek 的 AI 智能咨询</view>
+          <t-button theme="light" size="small" shape="round" bindtap="navToAI"
+            >立即尝试</t-button
+          >
+        </view>
+      </block>
+    </view>
+
+    <!-- 2. 核心功能 -->
+    <view class="section-title">
+      <view class="title-main">
+        <t-icon
+          name="dashboard"
+          size="42rpx"
+          color="#0052d9"
+          class="title-icon"
+        />
+        <text>核心功能</text>
+      </view>
+      <text class="section-desc-right">守护你的成长</text>
+    </view>
+
+    <view class="functions-grid">
+      <view class="func-card ai" bindtap="navToAssessment">
+        <view class="func-info">
+          <view class="func-name">心理测评</view>
+          <view class="func-tip">了解真实的自己</view>
+        </view>
+        <t-icon name="assignment" size="56rpx" color="#0052d9" />
+      </view>
+
+      <view class="func-card appointment" bindtap="navToAppointment">
+        <view class="func-info">
+          <view class="func-name">预约咨询</view>
+          <view class="func-tip">专家一对一服务</view>
+        </view>
+        <t-icon name="calendar" size="56rpx" color="#00a870" />
+      </view>
+
+      <view class="func-card articles" bindtap="navToArticles">
+        <view class="func-info">
+          <view class="func-name">心理知识</view>
+          <view class="func-tip">精选科普好文</view>
+        </view>
+        <t-icon name="education" size="56rpx" color="#ed7b2f" />
+      </view>
+
+      <view class="func-card mood" bindtap="navToMood">
+        <view class="func-info">
+          <view class="func-name">心情日记</view>
+          <view class="func-tip">记录每一次心动</view>
+        </view>
+        <t-icon name="edit-1" size="56rpx" color="#7c4dff" />
+      </view>
+    </view>
+
+    <!-- 3. 今日推荐 -->
+    <view class="section-title">
+      <view class="title-main">
+        <t-icon
+          name="thumb-up"
+          size="42rpx"
+          color="#ed7b2f"
+          class="title-icon"
+        />
+        <text>今日推荐</text>
+      </view>
+    </view>
+
+    <view wx:if="{{ isLoading }}" class="skeleton-list">
+      <t-skeleton
+        wx:for="{{ 3 }}"
+        wx:key="index"
+        rowCol="{{ rowSkeleton }}"
+        animation="flashing"
+        t-class="list-skeleton"
+      />
+    </view>
+
+    <view wx:else class="article-list">
+      <article-card
+        wx:for="{{ articles }}"
+        wx:key="_id"
+        article="{{ item }}"
+        bind:click="navToArticleDetail"
+      />
+    </view>
+  </list-view>
+</view>
+
+<!-- Banner 详情弹窗 -->
+<t-dialog
+  visible="{{ showDialog }}"
+  title="{{ dialogTitle }}"
+  confirm-btn="关闭"
+  bind:confirm="closeDialog"
+  bind:overlayClick="closeDialog"
+>
+  <view slot="content" class="dialog-text-justified">
+    {{ dialogContent }}
+  </view>
+</t-dialog>

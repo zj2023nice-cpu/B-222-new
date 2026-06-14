@@ -1,0 +1,54 @@
+<view class="dashboard-container">
+  <t-navbar title="我的" left-arrow="{{ false }}" placeholder />
+
+  <view class="user-header">
+    <view class="header-bg admin-bg"></view>
+    <view class="user-card-wrap">
+      <view class="user-info-main">
+        <t-avatar
+          t-class="user-avatar"
+          image="{{ userInfo.avatar || '' }}"
+          size="120rpx"
+          shape="circle"
+          icon="user"
+          bind:error="onAvatarError"
+        >
+          {{ userInfo.name[0] }}
+        </t-avatar>
+        <view class="user-text">
+          <view class="user-name-row">
+            <text class="user-name">{{ userInfo.name }}</text>
+            <t-tag theme="danger" variant="light" size="small" shape="round"
+              >管理员</t-tag
+            >
+          </view>
+          <text class="user-status">系统维护与管理</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="menu-section">
+    <t-cell-group theme="card">
+      <t-cell
+        title="账号注销"
+        leftIcon="{{ { name: 'user-clear-filled', color: '#e34d59' } }}"
+        hover
+        arrow
+        bindtap="deleteAccount"
+        title-style="color: #e34d59"
+      />
+    </t-cell-group>
+  </view>
+
+  <view class="logout-wrap">
+    <t-button theme="light" block size="large" shape="round" bindtap="logout">
+      退出登录
+    </t-button>
+  </view>
+
+  <view class="footer-tip">校园心理健康服务管理端 v1.0.0</view>
+</view>
+
+<t-dialog id="t-dialog" />
+<t-toast id="t-toast" />

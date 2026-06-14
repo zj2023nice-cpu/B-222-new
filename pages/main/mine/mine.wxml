@@ -1,0 +1,11 @@
+<view wx:if="{{ role === 'user' }}">
+  <student-mine />
+</view>
+<view wx:elif="{{ role === 'consultant' }}">
+  <consultant-mine bind:switchtab="onSwitchTab" />
+</view>
+<view wx:else>
+  <admin-mine />
+</view>
+
+<t-toast id="t-toast" />

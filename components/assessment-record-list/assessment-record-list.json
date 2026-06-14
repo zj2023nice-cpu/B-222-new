@@ -1,0 +1,13 @@
+{
+  "component": true,
+  "usingComponents": {
+    "t-search": "tdesign-miniprogram/search/search",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-tag": "tdesign-miniprogram/tag/tag",
+    "t-sticky": "tdesign-miniprogram/sticky/sticky",
+    "t-skeleton": "tdesign-miniprogram/skeleton/skeleton",
+    "t-avatar": "tdesign-miniprogram/avatar/avatar",
+    "list-view": "/components/list-view/list-view"
+  }
+}

@@ -1,0 +1,169 @@
+.assessment-record-list {
+  background-color: #f6f6f6;
+}
+
+.search-box {
+  padding: 24rpx 32rpx;
+  background: #fff;
+  z-index: 10;
+}
+
+.record-list {
+  padding: 32rpx 32rpx;
+}
+
+.record-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  border: 1rpx solid #eee;
+  position: relative;
+  overflow: hidden;
+  border-left-width: 10rpx;
+  border-left-style: solid;
+}
+
+.normal-card {
+  border-left-color: #00a870;
+}
+
+.warning-card {
+  border-left-color: #ed7b2f;
+}
+
+.card-hover {
+  transform: translateY(-4rpx);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  border: 4rpx solid #fff;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.name-box {
+  margin-left: 20rpx;
+}
+
+.user-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  display: block;
+}
+
+.date {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.type-tag {
+  --td-tag-font-size: 22rpx;
+  --td-tag-medium-height: 40rpx;
+  border-radius: 8rpx;
+}
+
+.card-mid {
+  margin-bottom: 40rpx;
+}
+
+.assessment-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #333;
+}
+
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.info-group {
+  display: flex;
+  gap: 40rpx;
+}
+
+.score-display,
+.result-display {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 22rpx;
+  color: #999;
+  margin-bottom: 6rpx;
+}
+
+.score-val {
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.result-val {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.text-primary {
+  color: #0052d9;
+}
+
+.text-warning {
+  color: #ed7b2f;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  background: #fff4ec;
+  padding: 8rpx 20rpx;
+  border-radius: 40rpx;
+}
+
+.status-text {
+  font-size: 24rpx;
+  color: #ed7b2f;
+  font-weight: 600;
+  margin-left: 8rpx;
+}
+
+.success-badge {
+  background: #e6f7ef;
+}
+
+.success-badge .status-text {
+  color: #00a870;
+}
+
+.skeleton-list {
+  padding: 24rpx 32rpx;
+}
+
+.skeleton-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}

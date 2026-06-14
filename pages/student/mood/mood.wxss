@@ -1,0 +1,499 @@
+page {
+  background-color: #f6f8fc;
+  --primary-color: #0052d9;
+}
+
+.mood-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+.header-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 480rpx;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 82, 217, 0.08) 0%,
+    rgba(246, 248, 252, 0) 100%
+  );
+  z-index: -1;
+}
+
+/* Tab 样式覆盖 */
+.custom-tabs {
+  --td-tab-item-active-color: var(--primary-color);
+  --td-tab-track-color: var(--primary-color);
+  --td-tab-track-thickness: 6rpx;
+}
+
+.tab-content {
+  box-sizing: border-box;
+}
+
+.record-panel {
+  padding: 32rpx;
+}
+
+.record-divider {
+  padding: 60rpx 0 60rpx;
+}
+
+/* 动画 */
+.anim-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* 顶部日期与金句 */
+.header-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 48rpx;
+}
+
+.date-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  padding: 20rpx 28rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.04);
+  margin-right: 24rpx;
+}
+
+.date-box .day {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: var(--primary-color);
+  line-height: 1;
+}
+
+.date-box .month-year {
+  font-size: 20rpx;
+  color: #999;
+  margin-top: 8rpx;
+  font-weight: 500;
+}
+
+.quote-box {
+  flex: 1;
+}
+
+.quote-text {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+  font-style: italic;
+  position: relative;
+}
+
+/* 主卡片容器 */
+.main-card {
+  background: #fff;
+  border-radius: 40rpx;
+  padding: 48rpx 32rpx;
+  box-shadow: 0 12rpx 48rpx rgba(0, 0, 0, 0.03); /* 回归自然清透的投影 */
+}
+
+.section-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 0;
+}
+
+/* 情绪网格 */
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24rpx;
+  margin-bottom: 56rpx;
+}
+
+.mood-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32rpx 0;
+  background: #f8faff;
+  border-radius: 32rpx;
+  border: 4rpx solid transparent;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+}
+
+.mood-emoji {
+  font-size: 64rpx;
+  margin-bottom: 12rpx;
+  transition: transform 0.3s ease;
+}
+
+.mood-label {
+  font-size: 26rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.mood-item.active {
+  background: #fff;
+  border-color: var(--mood-color);
+  box-shadow: 0 12rpx 32rpx rgba(0, 0, 0, 0.08);
+  transform: translateY(-8rpx);
+}
+
+.mood-item.active .mood-emoji {
+  transform: scale(1.2);
+}
+
+.mood-item.active .mood-label {
+  color: #333;
+  font-weight: 600;
+}
+
+.active-indicator {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  width: 16rpx;
+  height: 16rpx;
+  background: var(--mood-color);
+  border-radius: 50%;
+  box-shadow: 0 0 12rpx var(--mood-color);
+}
+
+/* 输入区域 */
+.input-section {
+  margin-bottom: 56rpx;
+}
+
+.main-card .mood-input {
+  background: #f8faff;
+  border: none;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  min-height: 240rpx;
+}
+
+/* 按钮样式 */
+.main-card .submit-btn:not(.t-is-disabled):not(.t-button--disabled) {
+  background: linear-gradient(90deg, #0052d9 0%, #006cff 100%);
+  color: #fff;
+}
+
+.main-card .submit-btn {
+  border: none;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+.action-btn-container {
+  margin-top: 16rpx;
+}
+
+/* 标题与提示切换容器 */
+.title-tip-container {
+  min-height: 100rpx;
+  margin-bottom: 32rpx;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.title-tip-container .section-title {
+  margin-bottom: 0;
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.title-tip-container .section-title.hide {
+  opacity: 0;
+  transform: translateX(-20rpx);
+  pointer-events: none;
+  position: absolute;
+}
+
+.tips-box {
+  width: 100%;
+  background: rgba(0, 82, 217, 0.05);
+  padding: 20rpx 28rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  opacity: 0;
+  transform: translateY(10rpx);
+  transition: all 0.4s ease;
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+}
+
+.tips-box.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  position: relative;
+}
+
+.tips-text {
+  font-size: 24rpx;
+  color: #0052d9;
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* 历史列表样式 */
+.history-list,
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  padding: 0 32rpx 60rpx;
+}
+
+.history-item {
+  background: #fff;
+  padding: 32rpx;
+  border-radius: 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.02);
+}
+
+.calendar-sticky-bg {
+  padding: 32rpx;
+}
+
+.calendar-trigger-wrap {
+  background: #fff;
+  padding: 24rpx 32rpx;
+  border-radius: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.02);
+}
+
+.calendar-info {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  line-height: 1;
+}
+
+.selected-date-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  line-height: 1;
+}
+
+.calendar-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.action-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.history-left {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.history-emoji {
+  font-size: 56rpx;
+}
+
+.history-date-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-date {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.history-label {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.history-content {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+  padding: 16rpx;
+  background: #f8faff;
+  border-radius: 16rpx;
+}
+
+.empty-status {
+  padding-top: 160rpx;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.weekly-panel {
+  padding: 32rpx;
+}
+
+.weekly-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+
+.weekly-range {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #333;
+}
+
+.weekly-stat {
+  font-size: 24rpx;
+  color: #999;
+  background: rgba(0, 82, 217, 0.06);
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+}
+
+.weekly-trend-card {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  background: #fff;
+  padding: 32rpx;
+  border-radius: 32rpx;
+  box-shadow: 0 12rpx 48rpx rgba(0, 0, 0, 0.03);
+  margin-bottom: 40rpx;
+}
+
+.trend-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  background: rgba(0, 82, 217, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.trend-desc {
+  font-size: 30rpx;
+  color: #333;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.weekly-day-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.weekly-day-item {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 28rpx 32rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.02);
+}
+
+.weekly-day-item.has-data {
+  background: #fff;
+}
+
+.weekly-day-item:not(.has-data) {
+  opacity: 0.5;
+}
+
+.day-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 100rpx;
+  margin-right: 32rpx;
+}
+
+.day-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.day-date {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.day-mood {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex: 1;
+}
+
+.day-emoji {
+  font-size: 48rpx;
+}
+
+.day-mood-label {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.day-no-data {
+  justify-content: center;
+}
+
+.no-data-text {
+  font-size: 28rpx;
+  color: #ccc;
+}
+
+.day-count {
+  display: flex;
+  align-items: baseline;
+  gap: 4rpx;
+  margin-left: auto;
+}
+
+.count-num {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.count-unit {
+  font-size: 22rpx;
+  color: #999;
+}

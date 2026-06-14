@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "consultant-assessment": "/pages/consultant/tab-page/assessment/assessment",
+    "admin-consultation-manage": "/pages/admin/tab-page/consultation-manage/consultation-manage"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "consultant-exam": "/pages/consultant/tab-page/exam/exam",
+    "admin-resource-manage": "/pages/admin/tab-page/resource-manage/resource-manage"
+  }
+}

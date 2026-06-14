@@ -1,0 +1,99 @@
+<view class="dashboard-container">
+  <t-navbar title="我的" left-arrow="{{ false }}" placeholder />
+  <!-- User Header with Background -->
+  <view class="user-header">
+    <view class="header-bg"></view>
+    <view class="user-card-wrap">
+      <view class="user-info-main" wx:if="{{ isLoading }}">
+        <t-skeleton rowCol="{{ rowColsAvater }}" />
+        <t-skeleton rowCol="{{ rowColsContent }}" />
+      </view>
+      <view class="user-info-main" wx:else>
+        <t-avatar
+          t-class="user-avatar"
+          image="{{ userInfo.avatar || '' }}"
+          size="120rpx"
+          shape="circle"
+          icon="user"
+          bind:error="onAvatarError"
+        />
+        <view class="user-text">
+          <view class="user-name-row">
+            <text class="user-name">{{ userInfo.name }}</text>
+            <t-tag theme="primary" variant="light" size="small" shape="round">{{
+              userInfo.title || "专业咨询师"
+            }}</t-tag>
+          </view>
+          <view class="user-status" wx:if="{{ userInfo.expertise }}">
+            擅长：{{ userInfo.expertise }}
+          </view>
+          <view class="user-status" wx:else
+            >专业心理咨询 · 用心倾听您的声音</view
+          >
+        </view>
+      </view>
+
+      <!-- Stats Row matching student style -->
+      <view class="stats-row">
+        <view class="stats-item" bindtap="onTabChange" data-index="0">
+          <text class="stats-num">{{ stats.pendingCount }}</text>
+          <text class="stats-label">待审核</text>
+        </view>
+        <view class="divider"></view>
+        <view class="stats-item">
+          <view class="stats-num">
+            <text>{{ stats.totalCount }}</text>
+            <text class="unit">次</text>
+          </view>
+          <text class="stats-label">累计咨询</text>
+        </view>
+        <view class="divider"></view>
+        <view class="stats-item">
+          <text class="stats-num">{{ stats.score }}</text>
+          <text class="stats-label">综合评分</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Management Menu -->
+  <view class="menu-section">
+    <t-cell-group theme="card">
+      <t-cell
+        title="排班设置"
+        leftIcon="{{ { name: 'time-filled', color: '#0052d9' } }}"
+        hover
+        arrow
+        bindtap="onDeveloping"
+      />
+      <t-cell
+        title="资料修改"
+        leftIcon="{{ { name: 'edit-1-filled', color: '#0052d9' } }}"
+        hover
+        arrow
+        bindtap="navTo"
+        data-url="profile"
+      />
+      <t-cell
+        title="账号注销"
+        leftIcon="{{ { name: 'user-clear-filled', color: '#e34d59' } }}"
+        hover
+        arrow
+        bindtap="deleteAccount"
+        title-style="color: #e34d59"
+      />
+    </t-cell-group>
+  </view>
+
+  <view class="logout-wrap">
+    <t-button theme="light" block size="large" shape="round" bindtap="logout">
+      退出登录
+    </t-button>
+  </view>
+
+  <view class="footer-tip">咨询师后台管理 v1.0.2</view>
+
+  <t-dialog id="t-dialog" />
+
+  <t-toast id="t-toast" />
+</view>

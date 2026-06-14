@@ -1,0 +1,110 @@
+<view class="container">
+  <!-- 顶部渐变背景 -->
+  <view class="header-bg"></view>
+
+  <t-navbar t-class="custom-navbar" left-arrow="{{ false }}" placeholder>
+    <view slot="left" class="nav-title-box">
+      <view class="nav-main-title">{{ id ? "编辑测评" : "创建测评" }}</view>
+      <view class="nav-sub-title">{{
+        id ? "完善您的测评配置信息" : "开始创建专业的测评工具"
+      }}</view>
+    </view>
+  </t-navbar>
+
+  <view class="main-content">
+    <!-- 之前的内容已不再需要 page-header, 因为已整合进导航栏 -->
+
+    <!-- 表单主卡片 -->
+    <view class="form-card">
+      <view class="section-label">
+        <view class="section-dot"></view>
+        <text class="section-text">基础配置</text>
+      </view>
+
+      <!-- 标题输入 -->
+      <view class="field-item">
+        <text class="field-label required">测评标题</text>
+        <view class="input-box title-box">
+          <t-icon
+            name="edit"
+            size="40rpx"
+            color="#0052d9"
+            class="prefix-icon"
+          />
+          <t-input
+            t-class="custom-input title-input"
+            maxlength="15"
+            value="{{ assessment.title }}"
+            placeholder="例如：职业性格倾向测试"
+            borderless
+            bindchange="onInputChange"
+            data-field="title"
+          />
+        </view>
+      </view>
+
+      <!-- 描述输入 -->
+      <view class="field-item">
+        <text class="field-label">详细描述</text>
+        <view class="input-box">
+          <t-textarea
+            value="{{ assessment.description }}"
+            placeholder="请输入该测评的专业背景、适用人群及预期效果..."
+            disableDefaultPadding
+            bindchange="onInputChange"
+            data-field="description"
+            t-class="custom-textarea"
+            maxlength="100"
+            indicator
+          />
+        </view>
+      </view>
+
+      <!-- 时长配置 -->
+      <view class="field-item" style="margin-bottom: 0">
+        <text class="field-label">咨询建议时长</text>
+        <view class="duration-selector">
+          <view class="duration-info">
+            <text class="duration-value">{{ assessment.duration }}</text>
+            <text class="duration-unit">MINUTES / 分钟</text>
+          </view>
+          <t-stepper
+            value="{{ assessment.duration }}"
+            min="{{ 5 }}"
+            max="{{ 120 }}"
+            step="{{ 5 }}"
+            bindchange="onDurationChange"
+            theme="capsule"
+          />
+        </view>
+      </view>
+    </view>
+
+    <view class="flex-fill"></view>
+
+    <!-- 底部固定的操作区 -->
+    <view class="fixed-bottom">
+      <t-button
+        wx:if="{{ id }}"
+        theme="danger"
+        size="large"
+        block
+        bindtap="deleteAssessment"
+        t-class="btn-delete"
+        >删除测评</t-button
+      >
+      <t-button
+        theme="primary"
+        block
+        size="large"
+        bindtap="saveAssessment"
+        loading="{{ isSaving }}"
+        t-class="btn-primary"
+        >{{ id ? "更新配置" : "完成并创建" }}</t-button
+      >
+    </view>
+  </view>
+
+  <t-toast id="t-toast" />
+  <t-dialog id="t-dialog" />
+</view>

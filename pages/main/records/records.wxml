@@ -1,0 +1,13 @@
+<view class="records-container">
+  <view wx:if="{{ role === 'user' }}">
+    <student-ai-chat />
+  </view>
+  <view wx:elif="{{ role === 'consultant' }}">
+    <consultant-user-records />
+  </view>
+  <view wx:elif="{{ role === 'admin' }}">
+    <admin-knowledge-manage />
+  </view>
+</view>
+
+<t-toast id="t-toast" />

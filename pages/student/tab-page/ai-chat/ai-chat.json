@@ -1,0 +1,13 @@
+{
+  "component": true,
+  "usingComponents": {
+    "t-chat-list": "tdesign-miniprogram/chat-list/chat-list",
+    "t-chat-message": "tdesign-miniprogram/chat-message/chat-message",
+    "t-chat-content": "tdesign-miniprogram/chat-content/chat-content",
+    "t-chat-sender": "tdesign-miniprogram/chat-sender/chat-sender",
+    "t-avatar": "tdesign-miniprogram/avatar/avatar",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog"
+  }
+}

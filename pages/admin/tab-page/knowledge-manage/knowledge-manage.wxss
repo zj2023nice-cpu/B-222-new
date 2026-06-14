@@ -1,0 +1,157 @@
+.container {
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.search-wrap {
+  background-color: #fff;
+  padding: 24rpx;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  gap: 24rpx;
+}
+
+.article-list {
+  padding-top: 24rpx;
+}
+
+.article-swipe-item {
+  margin: 0 32rpx 24rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.03);
+}
+
+.article-card {
+  display: flex;
+  padding: 24rpx;
+  background-color: #fff;
+  gap: 24rpx;
+  position: relative;
+}
+
+.article-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.article-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+}
+
+.article-category-wrap {
+  margin-bottom: 16rpx;
+  display: flex;
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  font-size: 22rpx;
+  color: #64748b;
+}
+
+.article-category {
+  color: #3b82f6;
+  background-color: #eff6ff;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.article-views {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.article-cover {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 16rpx;
+  background-color: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.swipe-right-btns {
+  display: flex;
+  height: 100%;
+}
+
+.btn-delete {
+  width: 140rpx;
+  height: 100%;
+  background-color: #ef4444;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+}
+
+.btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  padding: 32rpx;
+}
+
+.skeleton-card {
+  background-color: #fff;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.03);
+  display: flex; /* 关键：横向排列 */
+  gap: 24rpx;
+  align-items: flex-start;
+}
+
+.info-side {
+  flex: 1; /* 占据左侧空间 */
+}
+
+.image-side {
+  flex-shrink: 0; /* 图片不压缩 */
+}
+
+.empty-box {
+  padding: 120rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #94a3b8;
+  font-size: 28rpx;
+  gap: 24rpx;
+}
+
+.load-more {
+  padding: 40rpx 0;
+  text-align: center;
+}
+
+.no-more {
+  font-size: 24rpx;
+  color: #cbd5e1;
+}

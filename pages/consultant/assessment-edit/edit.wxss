@@ -1,0 +1,215 @@
+.container {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-navbar {
+  --td-navbar-color: #fff;
+  --td-navbar-bg-color: transparent;
+  --td-navbar-height: 200rpx; /* 增加高度以容纳大标题 */
+}
+
+.nav-title-box {
+  padding-left: 32rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding-top: 40rpx; /* 避开状态栏 */
+}
+
+.nav-main-title {
+  font-size: 52rpx;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.nav-sub-title {
+  font-size: 24rpx;
+  opacity: 0.8;
+  font-weight: 300;
+  margin-top: 12rpx;
+}
+
+/* 顶部装饰背景 */
+.header-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 420rpx;
+  background: linear-gradient(135deg, #0052d9 0%, #003cab 100%);
+  border-radius: 0 0 100rpx 100rpx;
+  z-index: 0;
+}
+
+.main-content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 48rpx;
+}
+
+/* 表单卡片容器 */
+.form-card {
+  margin: 20rpx 32rpx 40rpx; /* 移除了负边距，因为现在整合进了导航栏 */
+  background: #fff;
+  border-radius: 40rpx;
+  padding: 48rpx 24rpx;
+  box-shadow: 0 20rpx 60rpx rgba(0, 82, 217, 0.08);
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
+  padding-left: 12rpx;
+}
+
+.section-dot {
+  width: 8rpx;
+  height: 32rpx;
+  background: #0052d9;
+  border-radius: 4rpx;
+  margin-right: 16rpx;
+}
+
+.section-text {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: 1rpx;
+}
+
+/* 字段样式 */
+.field-item {
+  margin-bottom: 40rpx;
+}
+
+.field-label {
+  font-size: 26rpx;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+  display: block;
+  padding-left: 12rpx;
+}
+
+.field-label.required::after {
+  content: "*";
+  color: #ef4444;
+  margin-left: 4rpx;
+  font-size: 28rpx;
+}
+
+.input-box {
+  background: #f1f5f9;
+  border-radius: 20rpx;
+  transition: all 0.3s ease;
+  border: 4rpx solid transparent; /* 增加边框宽度以便在激活时更明显 */
+  overflow: hidden;
+}
+
+.title-box {
+  display: flex;
+  align-items: center;
+  background: #f1f5f9;
+  min-height: 112rpx;
+}
+
+.title-box .prefix-icon {
+  opacity: 0.8;
+  padding-left: 32rpx;
+}
+
+.input-box:active,
+.title-box:active {
+  background: #fff;
+  border-color: rgba(0, 82, 217, 0.15);
+  box-shadow: 0 4rpx 12rpx rgba(0, 82, 217, 0.05);
+}
+
+/* 覆盖 TDesign 组件变量 */
+.custom-input {
+  --td-input-bg-color: transparent;
+  --td-input-font-size: 32rpx;
+  --td-input-placeholder-color: #94a3b8;
+  padding: 0;
+  flex: 1;
+}
+
+.title-input {
+  --td-input-font-size: 38rpx;
+  --td-input-height: 112rpx;
+  font-weight: 700;
+  color: #0052d9;
+}
+
+.custom-textarea {
+  --td-textarea-background-color: transparent;
+  --td-textarea-font-size: 32rpx;
+  --td-textarea-placeholder-color: #94a3b8;
+  padding: 24rpx;
+  min-height: 240rpx;
+}
+
+/* 时长选择区 */
+.duration-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  background: #f1f5f9;
+  border-radius: 20rpx;
+  margin-top: 8rpx;
+}
+
+.duration-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.duration-value {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #0052d9;
+}
+
+.duration-unit {
+  font-size: 22rpx;
+  color: #64748b;
+  margin-top: 4rpx;
+}
+
+/* 按钮区 */
+.fixed-bottom {
+  padding: 32rpx 40rpx calc(32rpx + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.btn-primary {
+  flex: 1;
+  height: 100rpx;
+  background: linear-gradient(135deg, #0052d9 0%, #003cab 100%);
+  border: none;
+  border-radius: 50rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  box-shadow: 0 16rpx 32rpx rgba(0, 82, 217, 0.1);
+}
+
+.btn-delete {
+  flex: 1;
+  margin-top: 0;
+  height: 100rpx;
+  border-radius: 50rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}

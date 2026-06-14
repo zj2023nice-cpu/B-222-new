@@ -1,0 +1,121 @@
+<view class="dashboard-container">
+  <t-navbar title="我的" left-arrow="{{ false }}" placeholder />
+
+  <view class="user-header">
+    <view class="header-bg"></view>
+    <view class="user-card-wrap">
+      <view class="user-info-main">
+        <t-avatar
+          t-class="user-avatar"
+          image="{{ userInfo.avatar || '' }}"
+          size="120rpx"
+          shape="circle"
+          icon="user"
+          bind:error="onAvatarError"
+        >
+          {{ userInfo.name[0] }}
+        </t-avatar>
+        <view class="user-text">
+          <view class="user-name-row">
+            <text class="user-name">{{ userInfo.name }}</text>
+            <t-tag theme="primary" variant="light" size="small" shape="round"
+              >学生用户</t-tag
+            >
+          </view>
+          <text class="user-status">遇见更好的自己 · 心理能量满格</text>
+        </view>
+      </view>
+
+      <view class="stats-row">
+        <view class="stats-item" bindtap="navTo" data-url="appointment-list">
+          <text class="stats-num">{{ apptCount }}</text>
+          <text class="stats-label">已咨询</text>
+        </view>
+        <view class="divider"></view>
+        <view
+          class="stats-item"
+          bindtap="navTo"
+          data-url="mood"
+          data-tab="history"
+        >
+          <view class="stats-num">
+            <text>{{ moodCount }}</text>
+            <text class="unit">条</text>
+          </view>
+          <text class="stats-label">心情记录</text>
+        </view>
+        <view class="divider"></view>
+        <view class="stats-item" bindtap="navTo" data-url="collections">
+          <text class="stats-num">{{ collectionCount }}</text>
+          <text class="stats-label">我的收藏</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <growth-timeline id="growthTimeline" bind:itemtap="onTimelineItemTap" />
+
+  <view class="menu-section">
+    <t-cell-group theme="card">
+      <t-cell
+        title="我的预约"
+        leftIcon="{{ { name: 'calendar-1-filled', color: '#0052d9' } }}"
+        hover
+        arrow
+        bindtap="navTo"
+        data-url="appointment-list"
+      />
+      <t-cell
+        title="测评记录"
+        leftIcon="{{ { name: 'assignment-filled', color: '#0052d9' } }}"
+        hover
+        arrow
+        bindtap="navToExam"
+      />
+      <t-cell
+        title="我的收藏"
+        leftIcon="{{ { name: 'star-filled', color: '#0052d9' } }}"
+        hover
+        arrow
+        bindtap="navTo"
+        data-url="collections"
+      />
+      <t-cell
+        title="历史情绪"
+        leftIcon="{{ { name: 'activity-filled', color: '#0052d9' } }}"
+        hover
+        arrow
+        bindtap="navTo"
+        data-url="mood"
+        data-tab="history"
+      />
+      <t-cell
+        title="账号注销"
+        leftIcon="{{ { name: 'user-clear-filled', color: '#e34d59' } }}"
+        hover
+        arrow
+        bindtap="deleteAccount"
+        title-style="color: #e34d59"
+      />
+    </t-cell-group>
+  </view>
+
+  <view class="logout-wrap">
+    <t-button theme="light" block size="large" shape="round" bindtap="logout">
+      退出登录
+    </t-button>
+  </view>
+
+  <view class="footer-tip">校园心理健康服务 v1.0.2</view>
+</view>
+
+<t-dialog
+  visible="{{ dialog.visible }}"
+  title="{{ dialog.title }}"
+  content="{{ dialog.content }}"
+  confirm-btn="{{ dialog.confirmBtn }}"
+  cancel-btn="{{ dialog.cancelBtn || '取消' }}"
+  bind:confirm="onDialogConfirm"
+  bind:cancel="onDialogCancel"
+/>
+<t-toast id="t-toast" />

@@ -1,0 +1,222 @@
+<view class="mood-container">
+  <t-navbar title="情绪日记" left-arrow placeholder />
+  <!-- 顶部渐变装饰 -->
+  <view class="header-bg"></view>
+
+  <t-sticky offset-top="{{ navbarHeight }}" z-index="100">
+    <t-tabs
+      value="{{ activeTab }}"
+      bind:change="onTabChange"
+      t-class="custom-tabs"
+      t-class-active="tab-active-item"
+      t-class-track="tab-track"
+      swipeable
+    >
+      <t-tab-panel label="记一记" value="record" />
+      <t-tab-panel label="历史情绪" value="history" />
+      <t-tab-panel label="情绪周报" value="weekly" />
+    </t-tabs>
+  </t-sticky>
+
+  <!-- 历史日期筛选吸顶容器 (提取到根层级解决滚动触底抖动) -->
+  <t-sticky wx:if="{{ activeTab === 'history' }}" offset-top="{{ navbarHeight + 48 }}" z-index="99">
+    <view class="calendar-sticky-bg">
+      <view class="calendar-trigger-wrap">
+        <view class="calendar-info" bindtap="onCalendarToggle">
+          <t-icon name="calendar" size="40rpx" color="#666" />
+          <text class="selected-date-text">{{ formattedSelectedDate }}</text>
+        </view>
+        <view
+          class="calendar-action"
+          bindtap="{{ selectedDate ? 'clearDateFilter' : 'onCalendarToggle' }}"
+        >
+          <text class="action-label"
+            >{{ selectedDate ? '显示全部' : '点击筛选' }}</text
+          >
+          <t-icon
+            name="{{ selectedDate ? 'close-circle-filled' : 'chevron-down' }}"
+            size="32rpx"
+            color="{{ selectedDate ? '#fa4126' : '#bbb' }}"
+          />
+        </view>
+      </view>
+    </view>
+  </t-sticky>
+
+  <!-- 1. 记心情内容区 -->
+  <view
+    wx:if="{{ activeTab === 'record' }}"
+    class="tab-content record-panel anim-fade-in record-panel-bg"
+  >
+    <!-- 今日概览 -->
+    <view class="header-section">
+      <view class="date-box">
+        <view class="day">{{ todayDay }}</view>
+        <view class="month-year">{{ todayMonthYear }}</view>
+      </view>
+      <view class="quote-box">
+        <view class="quote-text">“感受当下的每一份情绪，都是成长的礼物。”</view>
+      </view>
+    </view>
+
+    <view class="main-card">
+      <view class="title-tip-container">
+        <view class="section-title {{ selectedMood ? 'hide' : '' }}"
+          >此刻的心情如何？</view
+        >
+        <view class="tips-box {{ selectedMood ? 'show' : '' }}">
+          <t-icon name="lightbulb" size="32rpx" color="#0052d9" />
+          <text class="tips-text">{{ currentMoodTip }}</text>
+        </view>
+      </view>
+
+      <view class="mood-grid">
+        <block wx:for="{{ moodOptions }}" wx:key="type">
+          <view
+            class="mood-item {{ selectedMood === item.type ? 'active' : '' }}"
+            bindtap="selectMood"
+            data-type="{{ item.type }}"
+            style="--mood-color: {{ item.color }}"
+          >
+            <view class="mood-emoji">{{ item.emoji }}</view>
+            <view class="mood-label">{{ item.label }}</view>
+            <view
+              class="active-indicator"
+              wx:if="{{ selectedMood === item.type }}"
+            ></view>
+          </view>
+        </block>
+      </view>
+
+      <view class="input-section">
+        <view class="section-title">想写点什么吗？</view>
+        <t-textarea
+          t-class="mood-input"
+          maxlength="100"
+          placeholder="在这里记下你的感受（100字以内）"
+          value="{{ content }}"
+          cursor-spacing="240rpx"
+          bind:change="onContentChange"
+          bordered
+          autosize="{{ { minRows: 6 } }}"
+          indicator
+          disable-default-padding
+          adjust-position
+          show-confirm-bar="{{ false }}"
+        />
+      </view>
+
+      <view class="action-btn-container">
+        <t-button
+          theme="primary"
+          size="large"
+          block
+          shape="round"
+          bindtap="saveDiary"
+          loading="{{ isSubmitting }}"
+          disabled="{{ !selectedMood }}"
+          t-class="submit-btn"
+        >
+          封存这份感受
+        </t-button>
+      </view>
+    </view>
+
+    <t-divider content="已经到底了" t-class="record-divider" dashed />
+  </view>
+
+  <!-- 2. 历史情绪内容区 -->
+  <view
+    wx:if="{{ activeTab === 'history' }}"
+    class="anim-fade-in record-panel-bg"
+  >
+    <list-view
+      isRefreshing="{{ isRefreshing }}"
+      isEmpty="{{ historyRecords.length === 0 && !isLoading }}"
+      showFooter="{{ historyRecords.length > 0 }}"
+      emptyText="{{ selectedDate ? '该日期暂无记录' : '还没有记录过心情呢' }}"
+      bind:refresh="onRefresh"
+    >
+      <view class="skeleton-list" wx:if="{{ isLoading }}">
+        <view class="history-item" wx:for="{{ 3 }}" wx:key="index">
+          <t-skeleton rowCol="{{ rowSkeleton }}" animation="gradient" />
+        </view>
+      </view>
+      <view class="history-list" wx:else>
+        <block wx:for="{{ historyRecords }}" wx:key="_id">
+          <view class="history-item">
+            <view class="history-left">
+              <view class="history-emoji">{{ item.emoji }}</view>
+              <view class="history-date-info">
+                <view class="history-date"
+                  >{{ item.dateStr }} {{ item.timeStr }}</view
+                >
+                <view class="history-label" style="color: {{ item.color }};">
+                  {{ item.label }}
+                </view>
+              </view>
+            </view>
+            <view class="history-content" wx:if="{{ item.content }}">
+              {{ item.content }}
+            </view>
+          </view>
+        </block>
+      </view>
+    </list-view>
+
+    <!-- 日历弹窗 -->
+    <t-calendar
+      visible="{{ showCalendar }}"
+      value="{{ selectedDate }}"
+      min-date="{{ minDate }}"
+      max-date="{{ maxDate }}"
+      bind:confirm="onCalendarConfirm"
+      bind:close="onCalendarToggle"
+      title="选择查询日期"
+    />
+  </view>
+
+  <!-- 3. 情绪周报内容区 -->
+  <view
+    wx:if="{{ activeTab === 'weekly' }}"
+    class="tab-content anim-fade-in record-panel-bg weekly-panel"
+  >
+    <view class="weekly-header">
+      <view class="weekly-range">{{ weeklyReport.weekRange }}</view>
+      <view class="weekly-stat">共 {{ weeklyReport.totalRecords }} 条记录</view>
+    </view>
+
+    <view class="weekly-trend-card">
+      <view class="trend-icon-wrap">
+        <t-icon name="chart" size="40rpx" color="#0052d9" />
+      </view>
+      <text class="trend-desc">{{ weeklyReport.trendDesc }}</text>
+    </view>
+
+    <view class="weekly-day-list">
+      <block wx:for="{{ weeklyReport.days }}" wx:key="dateKey">
+        <view class="weekly-day-item {{ item.count > 0 ? 'has-data' : '' }}">
+          <view class="day-info">
+            <view class="day-label">{{ item.dayLabel }}</view>
+            <view class="day-date">{{ item.dateLabel }}</view>
+          </view>
+          <view class="day-mood" wx:if="{{ item.count > 0 }}">
+            <view class="day-emoji">{{ item.emoji }}</view>
+            <view class="day-mood-label" style="color: {{ item.color }};">{{ item.label }}</view>
+          </view>
+          <view class="day-mood day-no-data" wx:else>
+            <text class="no-data-text">—</text>
+          </view>
+          <view class="day-count" wx:if="{{ item.count > 0 }}">
+            <text class="count-num">{{ item.count }}</text>
+            <text class="count-unit">次</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <t-divider content="周报结束" t-class="record-divider" dashed />
+  </view>
+</view>
+
+<t-toast id="t-toast" />
