@@ -3,7 +3,7 @@
   background-color: #f8fafc;
 }
 
-.banner-header {
+.page-header {
   padding: 24rpx;
   background: #fff;
   display: flex;
@@ -19,65 +19,8 @@
   padding: 0;
 }
 
-/* Skeleton Styles */
 .skeleton-wrap {
   padding: 32rpx 32rpx 0;
-}
-
-.skeleton-image-bg {
-  width: 100%;
-  height: 320rpx;
-  background: #f1f5f9;
-}
-
-.skeleton-line {
-  background: #f1f5f9;
-  border-radius: 8rpx;
-  margin-bottom: 16rpx;
-}
-
-.skeleton-line.title {
-  width: 40%;
-  height: 32rpx;
-  margin-bottom: 24rpx;
-}
-
-.skeleton-line.content {
-  width: 100%;
-  height: 24rpx;
-}
-
-.skeleton-line.content.short {
-  width: 60%;
-}
-
-.skeleton-line.meta {
-  width: 120rpx;
-  height: 20rpx;
-  margin-bottom: 0;
-}
-
-.skeleton-circle {
-  width: 48rpx;
-  height: 48rpx;
-  border-radius: 50%;
-  background: #f1f5f9;
-}
-
-.pulse {
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes skeleton-pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-  100% {
-    opacity: 1;
-  }
 }
 
 .banner-list {
@@ -141,6 +84,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12rpx;
+  gap: 16rpx;
 }
 
 .banner-title {
@@ -148,7 +92,9 @@
   font-weight: 600;
   color: #1e293b;
   flex: 1;
-  margin-right: 16rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .banner-content-preview {
@@ -160,6 +106,7 @@
   line-clamp: 2;
   overflow: hidden;
   margin-bottom: 16rpx;
+  min-height: 64rpx;
 }
 
 .banner-meta {
@@ -167,22 +114,10 @@
   color: #94a3b8;
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
-.status-indicator {
+.order-text {
   font-weight: 500;
-  white-space: nowrap;
-  width: 150rpx;
-}
-
-.status-indicator.active {
-  color: #00a870;
-  text-align: right;
-}
-
-.status-indicator:last-child {
-  text-align: right;
 }
 
 .banner-actions {
@@ -196,10 +131,6 @@
 .banner-action-btn {
   --td-button-text-font-size: 36rpx;
   --td-button-medium-height: 56rpx;
-}
-
-.action-btn-status {
-  --td-button-primary-text-color: rgb(238, 195, 52);
 }
 
 .btn-disabled {

@@ -106,10 +106,10 @@ const ROUTE_PERMISSIONS = {
   "pages/student/assessment/assessment-detail/assessment-detail": "user",
 
   // 管理员专属
-  "pages/admin/user-manage/user-manage": "admin",
-  "pages/admin/knowledge-manage/knowledge-manage": "admin",
-  "pages/admin/consultation-manage/consultation-manage": "admin",
-  "pages/admin/resource-manage/resource-manage": "admin",
+  "pages/admin/user-edit/user-edit": "admin",
+  "pages/admin/article-edit/article-edit": "admin",
+  "pages/admin/banner-manage/banner-manage": "admin",
+  "pages/admin/banner-edit/banner-edit": "admin",
 };
 
 export default {

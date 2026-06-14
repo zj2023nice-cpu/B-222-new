@@ -1,0 +1,96 @@
+<view class="container">
+  <t-navbar
+    title="{{ isEdit ? '编辑轮播图' : '新增轮播图' }}"
+    left-arrow
+    bind:go-back="onBack"
+    placeholder
+  />
+
+  <view wx:if="{{ isLoading }}" class="loading-container">
+    <t-loading theme="circular" size="80rpx" text="加载中..." layout="vertical" />
+  </view>
+
+  <view class="form-container" wx:else>
+    <view class="cover-section">
+      <view class="title-label required">轮播图片</view>
+      <t-upload
+        media-type="{{ ['image'] }}"
+        files="{{ fileList }}"
+        gridConfig="{{ gridConfig }}"
+        max="{{ 1 }}"
+        bind:add="onAddFile"
+        bind:remove="onRemoveFile"
+        t-class="form-upload-class"
+        t-class-grid="form-upload-grid"
+      />
+    </view>
+
+    <view class="title-label">基础配置</view>
+    <view class="form-section">
+      <t-input
+        t-class="title-input"
+        t-class-input="input-class"
+        placeholder="请输入标题 (最多12字)"
+        value="{{ banner.title }}"
+        layout="horizontal"
+        label-width="160rpx"
+        bind:change="onInputChange"
+        data-field="title"
+        maxlength="{{ 12 }}"
+        suffix="{{ (banner.title.length || 0) + '/12' }}"
+      >
+        <view slot="label" class="title-label required no-margin">轮播标题</view>
+      </t-input>
+
+      <view class="form-item row">
+        <view class="title-label required no-margin">排序权重</view>
+        <t-stepper
+          value="{{ banner.order }}"
+          bind:change="onInputChange"
+          data-field="order"
+          theme="filled"
+          t-class="form-stepper-class"
+        />
+      </view>
+
+      <view class="form-item row">
+        <view class="title-label no-margin">显示状态</view>
+        <t-switch
+          value="{{ banner.isActive }}"
+          bind:change="onSwitchChange"
+        />
+      </view>
+    </view>
+
+    <view class="title-label required">资讯摘要</view>
+    <view class="form-section">
+      <t-textarea
+        t-class="content-textarea"
+        t-class-textarea="textarea-class"
+        placeholder="点击轮播后显示的简短介绍 (最多30字)"
+        value="{{ banner.content }}"
+        bind:change="onInputChange"
+        data-field="content"
+        maxlength="{{ 30 }}"
+        indicator
+        bordered
+      />
+    </view>
+  </view>
+
+  <view class="footer-bar" wx:if="{{ !isLoading }}">
+    <t-button
+      theme="primary"
+      block
+      size="large"
+      shape="round"
+      bind:tap="handleSave"
+      loading="{{ isSubmitting }}"
+      disabled="{{ !isFormValid || isSubmitting }}"
+    >
+      {{ isSubmitting ? '提交中...' : (isEdit ? '保存修改' : '立即发布') }}
+    </t-button>
+  </view>
+</view>
+
+<t-toast id="t-toast" />

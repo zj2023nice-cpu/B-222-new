@@ -28,7 +28,17 @@ const ROLE_CONFIG = {
   admin: {
     pageTitle: "管理待办",
     loaders: ["loadAdminStats", "loadAdminPending"],
-    quickEntries: [],
+    quickEntries: [
+      {
+        key: "banner",
+        label: "轮播管理",
+        desc: "管理首页轮播图",
+        icon: "image",
+        color: "#0052d9",
+        gradient: "linear-gradient(to bottom right, #ffffff, #f0f7ff)",
+        url: "/pages/admin/banner-manage/banner-manage",
+      },
+    ],
   },
 };
 

@@ -19,7 +19,9 @@
     "pages/student/assessment/assessment",
     "pages/student/exam-records/exam-records",
     "pages/admin/user-edit/user-edit",
-    "pages/admin/article-edit/article-edit"
+    "pages/admin/article-edit/article-edit",
+    "pages/admin/banner-manage/banner-manage",
+    "pages/admin/banner-edit/banner-edit"
   ],
   "usingComponents": {},
   "window": {

@@ -1,4 +1,5 @@
 import Toast from "tdesign-miniprogram/toast/index";
+import Dialog from "tdesign-miniprogram/dialog/index";
 import articleService from "../../../../services/article";
 
 Component({
@@ -11,24 +12,7 @@ Component({
     banners: [],
     isLoading: true,
     isRefreshing: false,
-    showEditPopup: false,
-    isEditing: false,
-    currentBanner: {
-      _id: "",
-      imageUrl: "",
-      title: "",
-      content: "",
-      order: 0,
-      isActive: true,
-    },
-    fileList: [],
     keyword: "",
-    gridConfig: {
-      column: 1,
-      width: 624,
-      height: 380,
-    },
-    isFormValid: false,
   },
 
   lifetimes: {
@@ -52,7 +36,20 @@ Component({
         const { data } = await articleService.adminGetBanners({
           keyword: this.data.keyword,
         });
-        this.setData({ banners: data });
+
+        const processedBanners = (data || [])
+          .map((banner) => ({
+            ...banner,
+            _hasImage: !!(banner.imageUrl && banner.imageUrl.trim()),
+            _hasTitle: !!(banner.title && banner.title.trim()),
+            _order:
+              banner.order !== undefined && banner.order !== null
+                ? banner.order
+                : 999,
+          }))
+          .sort((a, b) => a._order - b._order);
+
+        this.setData({ banners: processedBanners });
       } catch (err) {
         console.error("Fetch banners failed:", err);
         Toast({
@@ -68,6 +65,13 @@ Component({
       }
     },
 
+    onImageError(e) {
+      const { index } = e.currentTarget.dataset;
+      this.setData({
+        [`banners[${index}]._hasImage`]: false,
+      });
+    },
+
     onSearch(e) {
       const { value } = e.detail;
       this.setData({ keyword: value });
@@ -80,25 +84,13 @@ Component({
     },
 
     handleAdd() {
-      this.setData({
-        isEditing: false,
-        showEditPopup: true,
-        fileList: [],
-        isFormValid: false,
-        currentBanner: {
-          _id: "",
-          imageUrl: "",
-          title: "",
-          content: "",
-          order: 0,
-          isActive: true,
-        },
+      wx.navigateTo({
+        url: "/pages/admin/banner-manage/banner-manage",
       });
     },
 
     handleEdit(e) {
       const { banner } = e.currentTarget.dataset;
-
       if (banner.isSystem) {
         Toast({
           context: this,
@@ -109,18 +101,15 @@ Component({
         });
         return;
       }
+      wx.navigateTo({
+        url: `/pages/admin/banner-edit/banner-edit?id=${banner._id}`,
+      });
+    },
 
-      this.setData(
-        {
-          isEditing: true,
-          showEditPopup: true,
-          currentBanner: { ...banner },
-          fileList: banner.imageUrl
-            ? [{ url: banner.imageUrl, type: "image" }]
-            : [],
-        },
-        () => this.checkFormValid(),
-      );
+    handleManageAll() {
+      wx.navigateTo({
+        url: "/pages/admin/banner-manage/banner-manage",
+      });
     },
 
     async handleToggleStatus(e) {
@@ -171,173 +160,37 @@ Component({
         return;
       }
 
-      wx.showModal({
-        title: "确认删除",
-        content: "确定要删除这张轮播图吗？",
-        success: async (res) => {
-          if (res.confirm) {
-            try {
-              await articleService.adminDeleteBanner(id);
-              Toast({
-                context: this,
-                selector: "#t-toast",
-                message: "删除成功",
-                theme: "success",
-                direction: "column",
-              });
-              this.fetchBanners(true);
-            } catch (err) {
-              console.error("Delete banner failed:", err);
-            }
-          }
-        },
-      });
-    },
-
-    onInputChange(e) {
-      const { field } = e.currentTarget.dataset;
-      const { value } = e.detail;
-      this.setData(
-        {
-          [`currentBanner.${field}`]: value,
-        },
-        () => this.checkFormValid(),
-      );
-    },
-
-    onSwitchChange(e) {
-      this.setData(
-        {
-          "currentBanner.isActive": e.detail.value,
-        },
-        () => this.checkFormValid(),
-      );
-    },
-
-    // 附件上传相关的逻辑
-    onAddFile(e) {
-      const { files } = e.detail;
-      this.setData(
-        {
-          fileList: files,
-        },
-        () => this.checkFormValid(),
-      );
-    },
-
-    onRemoveFile(e) {
-      const { index } = e.detail;
-      const { fileList } = this.data;
-      fileList.splice(index, 1);
-      this.setData(
-        {
-          fileList,
-        },
-        () => this.checkFormValid(),
-      );
-    },
-
-    checkFormValid() {
-      const { currentBanner, fileList } = this.data;
-      const hasImage = fileList.length > 0;
-      const hasTitle = !!(currentBanner.title && currentBanner.title.trim());
-      const hasContent = !!(
-        currentBanner.content && currentBanner.content.trim()
-      );
-      // order usually has a default 0, but check if it's there
-      const hasOrder =
-        currentBanner.order !== undefined && currentBanner.order !== null;
-
-      this.setData({
-        isFormValid: hasImage && hasTitle && hasContent && hasOrder,
-      });
-    },
-
-    async handleSubmit() {
-      const { currentBanner, fileList, isEditing } = this.data;
-      if (fileList.length === 0) {
-        Toast({
-          context: this,
-          selector: "#t-toast",
-          message: "请上传图片",
-          theme: "warning",
-          direction: "column",
-        });
-        return;
-      }
-      if (!currentBanner.title) {
-        Toast({
-          context: this,
-          selector: "#t-toast",
-          message: "请输入标题",
-          theme: "warning",
-          direction: "column",
-        });
-        return;
-      }
-
-      Toast({
+      Dialog.confirm({
         context: this,
-        selector: "#t-toast",
-        message: "提交中...",
-        theme: "loading",
-        duration: 0,
-        direction: "column",
-      });
-
-      try {
-        let imageUrl = currentBanner.imageUrl;
-        // 如果是新选的本地图片，先上传
-        if (
-          fileList[0].url.startsWith("http://") ||
-          fileList[0].url.startsWith("wxfile://")
-        ) {
-          const filePath = fileList[0].url;
-          const cloudPath = `banners/${Date.now()}-${Math.floor(Math.random() * 1000)}.png`;
-          const uploadRes = await wx.cloud.uploadFile({
-            cloudPath,
-            filePath,
-          });
-          imageUrl = uploadRes.fileID;
-        }
-
-        const submitData = {
-          ...currentBanner,
-          imageUrl,
-        };
-
-        if (isEditing) {
-          await articleService.adminUpdateBanner(submitData);
-        } else {
-          await articleService.adminAddBanner(submitData);
-        }
-
-        this.selectComponent("#t-toast").hide();
-        Toast({
-          context: this,
-          selector: "#t-toast",
-          message: isEditing ? "修改成功" : "添加成功",
-          theme: "success",
-          direction: "column",
-        });
-
-        this.setData({ showEditPopup: false });
-        this.fetchBanners(true);
-      } catch (err) {
-        console.error("Submit banner failed:", err);
-        this.selectComponent("#t-toast").hide();
-        Toast({
-          context: this,
-          selector: "#t-toast",
-          message: "提交失败",
-          theme: "error",
-          direction: "column",
-        });
-      }
-    },
-
-    closePopup() {
-      this.setData({ showEditPopup: false });
+        selector: "#t-dialog",
+        title: "确认删除",
+        content: `确定要删除轮播图「${banner?.title || "未命名"}」吗？\n此操作不可恢复。`,
+        confirmBtn: { content: "确认删除", theme: "danger", variant: "base" },
+        cancelBtn: "取消",
+      })
+        .then(async () => {
+          try {
+            await articleService.adminDeleteBanner(id);
+            Toast({
+              context: this,
+              selector: "#t-toast",
+              message: "删除成功",
+              theme: "success",
+              direction: "column",
+            });
+            this.fetchBanners(true);
+          } catch (err) {
+            console.error("Delete banner failed:", err);
+            Toast({
+              context: this,
+              selector: "#t-toast",
+              message: "删除失败",
+              theme: "error",
+              direction: "column",
+            });
+          }
+        })
+        .catch(() => {});
     },
   },
 });

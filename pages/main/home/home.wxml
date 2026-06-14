@@ -220,6 +220,31 @@
         <text class="empty-text">暂无待处理预约</text>
       </view>
 
+      <!-- 快捷入口 -->
+      <view class="section-title">
+        <view class="title-main">
+          <t-icon name="dashboard" size="42rpx" color="#0052d9" class="title-icon" />
+          <text>管理快捷入口</text>
+        </view>
+      </view>
+
+      <view class="quick-entries">
+        <view
+          class="quick-entry-card"
+          wx:for="{{ quickEntries }}"
+          wx:key="key"
+          bindtap="onQuickEntryTap"
+          data-url="{{ item.url }}"
+          style="background: {{ item.gradient }}"
+        >
+          <view class="quick-entry-info">
+            <text class="quick-entry-label">{{ item.label }}</text>
+            <text class="quick-entry-desc">{{ item.desc }}</text>
+          </view>
+          <t-icon name="{{ item.icon }}" size="48rpx" color="{{ item.color }}" />
+        </view>
+      </view>
+
     </block>
 
   </list-view>

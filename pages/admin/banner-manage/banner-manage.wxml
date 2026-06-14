@@ -1,15 +1,16 @@
 <view class="container">
-  <t-navbar title="轮播图管理" left-arrow="{{ false }}" placeholder />
+  <t-navbar title="轮播图管理" left-arrow bind:go-back="onBack" placeholder />
 
-  <view class="banner-header">
+  <view class="page-header">
     <t-search
       placeholder="搜索轮播标题"
       value="{{ keyword }}"
       bind:change="onSearch"
+      bind:clear="onSearchClear"
       class="search-bar"
       shape="round"
     />
-    <t-button theme="primary" size="small" bindtap="handleManageAll">完整管理</t-button>
+    <t-button theme="primary" icon="add" shape="circle" bindtap="handleAdd" />
   </view>
 
   <list-view
@@ -17,37 +18,27 @@
     isEmpty="{{ banners.length === 0 && !isLoading }}"
     showFooter="{{ banners.length > 0 && !isLoading }}"
     footerText="已经到底了"
-    minHeight="calc(100vh - 400rpx)"
+    emptyText="暂无轮播图，点击右上角添加"
+    emptyIcon="image"
+    minHeight="calc(100vh - 300rpx)"
     bind:refresh="onRefresh"
   >
-    <!-- Skeleton Screen -->
     <view wx:if="{{ isLoading }}" class="skeleton-wrap">
-      <view
-        class="banner-item skeleton-card-wrap"
-        wx:for="{{ 2 }}"
-        wx:key="index"
-      >
-        <view class="skeleton-image-bg pulse"></view>
+      <view class="banner-item" wx:for="{{ 3 }}" wx:key="index">
+        <t-skeleton theme="image" rows="{{ skeletonImage }}" loading />
         <view class="banner-info">
-          <view class="skeleton-line title pulse"></view>
-          <view class="skeleton-line content pulse"></view>
-          <view class="skeleton-line content short pulse"></view>
+          <t-skeleton theme="text" rows="{{ skeletonText }}" loading />
           <view class="banner-meta">
-            <view class="skeleton-line meta pulse"></view>
-            <view class="skeleton-line meta pulse"></view>
+            <t-skeleton
+              theme="text"
+              rows="{{ [{ width: '120rpx', height: '20rpx' }] }}"
+              loading
+            />
           </view>
-        </view>
-        <view class="banner-actions">
-          <view
-            class="skeleton-circle pulse"
-            wx:for="{{ 3 }}"
-            wx:key="*this"
-          ></view>
         </view>
       </view>
     </view>
 
-    <!-- Banner List -->
     <view class="banner-list" wx:if="{{ !isLoading }}">
       <view class="banner-item" wx:for="{{ banners }}" wx:key="_id">
         <view class="banner-image-wrap">
@@ -78,25 +69,26 @@
             class="dirty-tag"
           >数据异常</t-tag>
         </view>
+
         <view class="banner-info">
           <view class="banner-title-row">
             <text class="banner-title">{{ item.title || "未命名" }}</text>
+            <t-tag
+              theme="{{ item.isActive ? 'success' : 'default' }}"
+              variant="light"
+              size="small"
+            >{{ item.isActive ? "已启用" : "已隐藏" }}</t-tag>
           </view>
           <text class="banner-content-preview">{{
             item.content || "暂无资讯内容"
           }}</text>
           <view class="banner-meta">
-            <text class="status-indicator"
-              >排序：{{
-                item.order || item.order === 0 ? item.order : "未排序"
-              }}</text
-            >
-            <text
-              class="status-indicator {{ item.isActive ? 'active' : '' }}"
-              >{{ item.isActive ? "● 已启用" : "○ 已隐藏" }}</text
-            >
+            <text class="order-text">排序：{{
+              item.order || item.order === 0 ? item.order : "未设置"
+            }}</text>
           </view>
         </view>
+
         <view class="banner-actions">
           <t-button
             variant="text"
@@ -104,7 +96,7 @@
             icon="{{ item.isActive ? 'browse-off' : 'browse' }}"
             bindtap="handleToggleStatus"
             data-banner="{{ item }}"
-            t-class="banner-action-btn action-btn-status {{
+            t-class="banner-action-btn {{
               item.isSystem ? 'btn-disabled' : ''
             }}"
           />
@@ -123,8 +115,7 @@
             theme="danger"
             icon="delete"
             bindtap="handleDelete"
-            data-id="{{ item._id }}"
-            data-is-system="{{ item.isSystem }}"
+            data-banner="{{ item }}"
             t-class="banner-action-btn {{
               item.isSystem ? 'btn-disabled' : ''
             }}"
