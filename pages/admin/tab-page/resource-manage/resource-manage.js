@@ -1,6 +1,7 @@
 import Toast from "tdesign-miniprogram/toast/index";
 import Dialog from "tdesign-miniprogram/dialog/index";
 import articleService from "../../../../services/article";
+import router from "../../../../utils/router";
 
 Component({
   options: {
@@ -84,7 +85,7 @@ Component({
     },
 
     handleAdd() {
-      wx.navigateTo({
+      router.navigateTo({
         url: "/pages/admin/banner-manage/banner-manage",
       });
     },
@@ -101,13 +102,13 @@ Component({
         });
         return;
       }
-      wx.navigateTo({
+      router.navigateTo({
         url: `/pages/admin/banner-edit/banner-edit?id=${banner._id}`,
       });
     },
 
     handleManageAll() {
-      wx.navigateTo({
+      router.navigateTo({
         url: "/pages/admin/banner-manage/banner-manage",
       });
     },

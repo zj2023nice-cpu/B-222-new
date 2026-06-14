@@ -2,6 +2,7 @@ import Toast from "tdesign-miniprogram/toast/index";
 import Dialog from "tdesign-miniprogram/dialog/index";
 import articleService from "../../../../services/article";
 import { formatTime } from "../../../../utils/util";
+import router from "../../../../utils/router";
 
 Component({
   options: {
@@ -124,7 +125,7 @@ Component({
     },
 
     onAddArticle() {
-      wx.navigateTo({
+      router.navigateTo({
         url: "/pages/admin/article-edit/article-edit",
         events: {
           refreshList: () => this.loadData(true),
@@ -134,7 +135,7 @@ Component({
 
     onArticleTap(e) {
       const { id } = e.currentTarget.dataset;
-      wx.navigateTo({
+      router.navigateTo({
         url: `/pages/admin/article-edit/article-edit?id=${id}`,
         events: {
           refreshList: () => this.loadData(true),

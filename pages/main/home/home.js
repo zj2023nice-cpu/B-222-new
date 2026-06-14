@@ -1,4 +1,5 @@
 import { SafePage } from "../../../utils/middleware";
+import router from "../../../utils/router";
 import Toast from "tdesign-miniprogram/toast/index";
 import appointmentService from "../../../services/appointment";
 import assessmentService from "../../../services/assessment";
@@ -159,33 +160,33 @@ SafePage({
   },
 
   navToAppointmentList() {
-    wx.navigateTo({ url: "/pages/student/appointment-list/appointment-list" });
+    router.navigateTo({ url: "/pages/student/appointment-list/appointment-list" });
   },
 
   navToBookAppointment() {
-    wx.navigateTo({ url: "/pages/student/appointment/appointment" });
+    router.navigateTo({ url: "/pages/student/appointment/appointment" });
   },
 
   navToAssessment() {
-    wx.navigateTo({ url: "/pages/student/assessment/assessment" });
+    router.navigateTo({ url: "/pages/student/assessment/assessment" });
   },
 
   navToMood() {
-    wx.navigateTo({ url: "/pages/student/mood/mood?activeTab=record" });
+    router.navigateTo({ url: "/pages/student/mood/mood?activeTab=record" });
   },
 
   navToConsultantAppointments() {
-    wx.switchTab({ url: "/pages/main/records/records" });
+    router.switchTab({ url: "/pages/main/records/records" });
   },
 
   navToAdminConsultation() {
-    wx.switchTab({ url: "/pages/main/assessment/assessment" });
+    router.switchTab({ url: "/pages/main/assessment/assessment" });
   },
 
   onQuickEntryTap(e) {
     const { url } = e.currentTarget.dataset;
     if (url) {
-      wx.navigateTo({ url });
+      router.navigateTo({ url });
     }
   },
 

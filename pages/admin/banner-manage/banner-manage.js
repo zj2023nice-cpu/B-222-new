@@ -1,6 +1,7 @@
 import Toast from "tdesign-miniprogram/toast/index";
 import Dialog from "tdesign-miniprogram/dialog/index";
 import articleService from "../../../services/article";
+import router from "../../../utils/router";
 
 Page({
   data: {
@@ -90,7 +91,7 @@ Page({
   },
 
   handleAdd() {
-    wx.navigateTo({
+    router.navigateTo({
       url: "/pages/admin/banner-edit/banner-edit",
       events: {
         refreshList: () => this.loadBanners(true),
@@ -110,7 +111,7 @@ Page({
       });
       return;
     }
-    wx.navigateTo({
+    router.navigateTo({
       url: `/pages/admin/banner-edit/banner-edit?id=${banner._id}`,
       events: {
         refreshList: () => this.loadBanners(true),

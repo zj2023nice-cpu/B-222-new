@@ -1,4 +1,5 @@
 import { SafePage } from "../../../utils/middleware";
+import router from "../../../utils/router";
 import Toast from "tdesign-miniprogram/toast/index";
 
 SafePage({
@@ -24,7 +25,7 @@ SafePage({
       "/pages/main/assessment/assessment",
     ];
     if (paths[index]) {
-      wx.switchTab({ url: paths[index] });
+      router.switchTab(paths[index]);
     }
   },
 });

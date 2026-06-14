@@ -1,6 +1,7 @@
 import moodService from "../../services/mood";
 import assessmentService from "../../services/assessment";
 import appointmentService from "../../services/appointment";
+import router from "../utils/router";
 
 const TYPE_MAP = {
   mood: {
@@ -237,28 +238,28 @@ Component({
         const assessmentId = item.raw?.assessmentId;
         const title = item.raw?.assessmentTitle || "心理测评";
         if (assessmentId) {
-          wx.navigateTo({
+          router.navigateTo({
             url: `/pages/student/assessment/assessment-detail/assessment-detail?id=${assessmentId}&title=${encodeURIComponent(title)}`,
             fail: () => {
-              wx.navigateTo({
+              router.navigateTo({
                 url: `/pages/student/exam-records/exam-records`,
                 fail: () => {},
               });
             },
           });
         } else {
-          wx.navigateTo({
+          router.navigateTo({
             url: `/pages/student/exam-records/exam-records`,
             fail: () => {},
           });
         }
       } else if (item.type === "appointment") {
-        wx.navigateTo({
+        router.navigateTo({
           url: `/pages/student/appointment-list/appointment-list`,
           fail: () => {},
         });
       } else if (item.type === "mood") {
-        wx.navigateTo({
+        router.navigateTo({
           url: `/pages/student/mood/mood?activeTab=history`,
           fail: () => {},
         });

@@ -2,6 +2,7 @@ import assessmentService from "../../../../services/assessment";
 import Toast from "tdesign-miniprogram/toast/index";
 import { SafePage } from "../../../../utils/middleware";
 import { getResultConfigByScore } from "../../../../utils/constants";
+import router from "../../../../utils/router";
 
 SafePage({
   data: {
@@ -159,7 +160,7 @@ SafePage({
   onArticleClick(e) {
     const { article } = e.detail;
     if (!article || !article._id || article.isDeleted) return;
-    wx.navigateTo({
+    router.navigateTo({
       url: `/pages/student/articles/article-detail/article-detail?id=${article._id}`,
     });
   },

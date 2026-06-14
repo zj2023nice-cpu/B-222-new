@@ -1,4 +1,5 @@
 import articleService from "../../../../services/article";
+import router from "../../../../utils/router";
 
 Component({
   data: {
@@ -62,22 +63,22 @@ Component({
     },
 
     navToAssessment() {
-      wx.navigateTo({ url: "/pages/student/assessment/assessment" });
+      router.navigateTo({ url: "/pages/student/assessment/assessment" });
     },
     navToAppointment() {
-      wx.navigateTo({ url: "/pages/student/appointment/appointment" });
+      router.navigateTo({ url: "/pages/student/appointment/appointment" });
     },
     navToArticles() {
-      wx.navigateTo({ url: "/pages/student/articles/articles" });
+      router.navigateTo({ url: "/pages/student/articles/articles" });
     },
     navToMood() {
-      wx.navigateTo({ url: "/pages/student/mood/mood?activeTab=record" });
+      router.navigateTo({ url: "/pages/student/mood/mood?activeTab=record" });
     },
     navToArticleDetail(e) {
       const article = e.detail.article || e.currentTarget.dataset;
       const id = article._id || article.id;
       if (id) {
-        wx.navigateTo({
+        router.navigateTo({
           url: `/pages/student/articles/article-detail/article-detail?id=${id}`,
         });
       }

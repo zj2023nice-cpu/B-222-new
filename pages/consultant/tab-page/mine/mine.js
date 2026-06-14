@@ -2,6 +2,7 @@ import userService from "../../../../services/user";
 import Toast from "tdesign-miniprogram/toast/index";
 import Dialog from "tdesign-miniprogram/dialog/index";
 import { DIALOG_CONFIGS } from "../../../../utils/constants";
+import router from "../../../../utils/router";
 
 Component({
   data: {
@@ -90,7 +91,7 @@ Component({
       if (url === "profile") {
         targetUrl = "/pages/consultant/profile/profile";
       }
-      if (targetUrl) wx.navigateTo({ url: targetUrl });
+      if (targetUrl) router.navigateTo({ url: targetUrl });
     },
 
     onTabChange(e) {
@@ -115,7 +116,7 @@ Component({
       })
         .then(() => {
           wx.clearStorageSync();
-          wx.reLaunch({ url: "/pages/login/login" });
+          router.reLaunch({ url: "/pages/login/login" });
         })
         .catch(() => {
           // cancel
@@ -139,7 +140,7 @@ Component({
           try {
             await userService.deleteAccount("consultant");
             wx.clearStorageSync();
-            wx.reLaunch({ url: "/pages/login/login" });
+            router.reLaunch({ url: "/pages/login/login" });
           } catch (err) {
             console.error("注销失败:", err);
             Toast({

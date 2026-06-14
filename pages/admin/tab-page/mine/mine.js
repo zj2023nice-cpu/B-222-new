@@ -2,6 +2,7 @@ import Dialog from "tdesign-miniprogram/dialog/index";
 import Toast from "tdesign-miniprogram/toast/index";
 import { DIALOG_CONFIGS } from "../../../../utils/constants";
 const userService = require("../../../../services/user").default;
+import router from "../../../../utils/router";
 
 Component({
   options: {
@@ -45,7 +46,7 @@ Component({
       })
         .then(() => {
           wx.removeStorageSync("userInfo");
-          wx.reLaunch({
+          router.reLaunch({
             url: "/pages/login/login",
           });
         })
@@ -84,7 +85,7 @@ Component({
             // Clear local storage and redirect to login
             wx.removeStorageSync("userInfo");
             setTimeout(() => {
-              wx.reLaunch({
+              router.reLaunch({
                 url: "/pages/login/login",
               });
             }, 1500);

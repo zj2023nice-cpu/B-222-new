@@ -1,5 +1,6 @@
 import Toast from "tdesign-miniprogram/toast/index";
 import assessmentService from "../../../../services/assessment";
+import router from "../../../../utils/router";
 
 Component({
   options: {
@@ -101,14 +102,14 @@ Component({
     },
 
     addAssessment() {
-      wx.navigateTo({
+      router.navigateTo({
         url: "/pages/consultant/assessment-edit/edit",
       });
     },
 
     editAssessment(e) {
       const { id } = e.currentTarget.dataset;
-      wx.navigateTo({
+      router.navigateTo({
         url: `/pages/consultant/assessment-edit/edit?id=${id}`,
       });
     },

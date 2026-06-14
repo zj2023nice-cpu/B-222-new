@@ -1,5 +1,6 @@
 import Toast from "tdesign-miniprogram/toast/index";
 const articleService = require("../../../services/article").default;
+import router from "../../../utils/router";
 
 Page({
   data: {
@@ -76,7 +77,7 @@ Page({
     const id = article._id || article.id;
 
     if (id) {
-      wx.navigateTo({
+      router.navigateTo({
         url: `/pages/student/articles/article-detail/article-detail?id=${id}`,
       });
     }

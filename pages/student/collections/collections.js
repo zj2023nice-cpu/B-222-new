@@ -1,6 +1,7 @@
 import Dialog from "tdesign-miniprogram/dialog/index";
 import Toast from "tdesign-miniprogram/toast/index";
 const articleService = require("../../../services/article").default;
+import router from "../../../utils/router";
 
 Page({
   data: {
@@ -120,7 +121,7 @@ Page({
     // article-card 组件抛出的 click 事件带有 detail.article
     const article = e.detail.article;
     if (article && article._id) {
-      wx.navigateTo({
+      router.navigateTo({
         url: `/pages/student/articles/article-detail/article-detail?id=${article._id}`,
       });
     }

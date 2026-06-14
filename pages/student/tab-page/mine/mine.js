@@ -1,6 +1,7 @@
 import Toast from "tdesign-miniprogram/toast/index";
 import { DIALOG_CONFIGS } from "../../../../utils/constants";
 import userService from "../../../../services/user";
+import router from "../../../../utils/router";
 
 Component({
   data: {
@@ -65,10 +66,10 @@ Component({
       if (!url) return;
       let targetUrl = `/pages/student/${url}/${url}`;
       if (tab) targetUrl += `?activeTab=${tab}`;
-      wx.navigateTo({ url: targetUrl });
+      router.navigateTo({ url: targetUrl });
     },
     navToExam() {
-      wx.navigateTo({ url: "/pages/student/exam-records/exam-records" });
+      router.navigateTo({ url: "/pages/student/exam-records/exam-records" });
     },
 
     logout() {
@@ -108,14 +109,14 @@ Component({
 
     handleLogout() {
       wx.clearStorageSync();
-      wx.reLaunch({ url: "/pages/login/login" });
+      router.reLaunch({ url: "/pages/login/login" });
     },
 
     async handleDeleteAccount() {
       try {
         await userService.deleteAccount("user");
         wx.clearStorageSync();
-        wx.reLaunch({ url: "/pages/login/login" });
+        router.reLaunch({ url: "/pages/login/login" });
       } catch (err) {
         Toast({
           context: this,

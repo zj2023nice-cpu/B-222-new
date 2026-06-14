@@ -1,6 +1,7 @@
 import Toast from "tdesign-miniprogram/toast/index";
 import assessmentService from "../../../services/assessment";
 import { SafePage } from "../../../utils/middleware";
+import router from "../../../utils/router";
 
 SafePage({
   data: {
@@ -89,7 +90,7 @@ SafePage({
 
   startAssessment(e) {
     const { id, title } = e.currentTarget.dataset;
-    wx.navigateTo({
+    router.navigateTo({
       url: `/pages/student/assessment/assessment-detail/assessment-detail?id=${id}&title=${encodeURIComponent(title)}`,
     });
   },

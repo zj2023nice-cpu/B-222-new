@@ -1,4 +1,5 @@
 import Toast from "tdesign-miniprogram/toast/index";
+import router from "../utils/router";
 
 Component({
   options: {
@@ -80,7 +81,7 @@ Component({
           cancelText: "保留候补",
         });
       } else if (action === "gotoBook") {
-        wx.navigateTo({
+        router.navigateTo({
           url: "/pages/student/appointment/appointment",
         });
       } else if (action === "delete") {

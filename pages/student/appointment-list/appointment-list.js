@@ -4,6 +4,7 @@ import {
   APPOINTMENT_STATUS_MAP,
   APPOINTMENT_STATUS_LIST,
 } from "../../../utils/constants";
+import router from "../../../utils/router";
 
 Page({
   data: {
@@ -353,7 +354,7 @@ Page({
   },
 
   navToBook() {
-    wx.navigateTo({
+    router.navigateTo({
       url: "/pages/student/appointment/appointment",
     });
   },

@@ -2,6 +2,7 @@ import Dialog from "tdesign-miniprogram/dialog/index";
 import Toast from "tdesign-miniprogram/toast/index";
 import userService from "../../../../services/user";
 import { formatTime } from "../../../../utils/util";
+import router from "../../../../utils/router";
 
 // 定义一个组件外部的持久变量，用于在组件卸载后依然保留选项卡状态
 let lastSelectedTab = "user";
@@ -271,7 +272,7 @@ Component({
         return;
       }
       const role = this.data.currentTab; // 'user' or 'consultant'
-      wx.navigateTo({
+      router.navigateTo({
         url: `/pages/admin/user-edit/user-edit?id=${item._id}&role=${role}`,
         events: {
           // 监听编辑页成功保存后发出的 refreshList 事件

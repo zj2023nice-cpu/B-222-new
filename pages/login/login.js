@@ -1,5 +1,6 @@
 import Toast from "tdesign-miniprogram/toast/index";
 import Dialog from "tdesign-miniprogram/dialog/index";
+import router from "../../utils/router";
 const userService = require("../../services/user").default;
 
 const app = getApp();
@@ -22,8 +23,7 @@ Page({
     if (!userInfo) {
       wx.hideTabBar();
     } else {
-      // 如果已经登录，直接跳回“首页”
-      wx.switchTab({ url: "/pages/main/home/home" });
+      router.goAfterLogin(userInfo.role);
     }
   },
 
@@ -64,7 +64,7 @@ Page({
       if (toast) toast.hide();
 
       setTimeout(() => {
-        wx.switchTab({ url: "/pages/main/home/home" });
+        router.goAfterLogin(this.data.role);
       }, 500);
     } catch (err) {
       // 清除加载
@@ -168,7 +168,7 @@ Page({
       if (toast) toast.hide();
 
       setTimeout(() => {
-        wx.switchTab({ url: "/pages/main/home/home" });
+        router.goAfterLogin(this.data.role);
       }, 500);
     } catch (err) {
       const toast = this.selectComponent("#t-toast");

@@ -31,13 +31,11 @@ Component({
       const index = e.detail.value;
       const url = this.data.list[index].pagePath;
 
-      wx.switchTab({
-        url: url,
-      });
-
       this.setData({
         selected: index,
       });
+
+      router.switchTab(url);
     },
 
     /**
